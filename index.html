@@ -613,6 +613,7 @@
     renderer.setSize(innerWidth, innerHeight);
 
     const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x130d0a, 0.028);
 
     // ── Camera ────────────────────────────────────────────────────
     const camera = new THREE.PerspectiveCamera(36, innerWidth / innerHeight, 0.1, 100);
@@ -729,37 +730,85 @@
 
     let currentTheme = localStorage.getItem('vheda-theme') || 'dusk';
 
-    function applyThemeLights(name) {
-      const th = THEMES[name];
-      keyL.color.setHex(th.keyColor);   keyL.intensity  = th.keyI;
-      sideL.color.setHex(th.sideColor); sideL.intensity = th.sideI;
-      fillL.color.setHex(th.fillColor); fillL.intensity = th.fillI;
-      ambL.color.setHex(th.ambColor);   ambL.intensity  = th.ambI;
-    }
-
-    function updateCubeMaterials() {
-      const th = THEMES[currentTheme];
-      const b = new THREE.Color(th.cubeBottom), t = new THREE.Color(th.cubeTop);
-      activeMats.forEach((mat, i) => {
-        const pct = GRID <= 1 ? 0.5 : i / (GRID - 1);
-        mat.color.lerpColors(b, t, pct);
-      });
-    }
-
     const themeColorMeta = document.getElementById('theme-color-meta');
 
+    // Snapshot current Three.js light/material state for interpolation
+    function snapshotThreeState() {
+      return {
+        keyColor:  keyL.color.clone(),  keyI:  keyL.intensity,
+        sideColor: sideL.color.clone(), sideI: sideL.intensity,
+        fillColor: fillL.color.clone(), fillI: fillL.intensity,
+        ambColor:  ambL.color.clone(),  ambI:  ambL.intensity,
+        matColors: activeMats.map(m => m.color.clone()),
+        bloom:     bloomPass.strength,
+        fogColor:  scene.fog.color.clone(),
+      };
+    }
+
+    const THEME_TRANS_DUR = 1.4; // seconds
+    let themeTransition = null;  // { from, to, t }
+
+    function buildThemeTarget(name) {
+      const th = THEMES[name];
+      const b = new THREE.Color(th.cubeBottom), top = new THREE.Color(th.cubeTop);
+      return {
+        keyColor:  new THREE.Color(th.keyColor),  keyI:  th.keyI,
+        sideColor: new THREE.Color(th.sideColor), sideI: th.sideI,
+        fillColor: new THREE.Color(th.fillColor), fillI: th.fillI,
+        ambColor:  new THREE.Color(th.ambColor),  ambI:  th.ambI,
+        matColors: activeMats.map((_, i) => {
+          const pct = GRID <= 1 ? 0.5 : i / (GRID - 1);
+          return new THREE.Color().lerpColors(b, top, pct);
+        }),
+        bloom:    BLOOM_STRENGTH[name] ?? 0.45,
+        fogColor: new THREE.Color(th.bgColor),
+      };
+    }
+
+    function applyThreeState(s) {
+      keyL.color.copy(s.keyColor);   keyL.intensity  = s.keyI;
+      sideL.color.copy(s.sideColor); sideL.intensity = s.sideI;
+      fillL.color.copy(s.fillColor); fillL.intensity = s.fillI;
+      ambL.color.copy(s.ambColor);   ambL.intensity  = s.ambI;
+      activeMats.forEach((mat, i) => mat.color.copy(s.matColors[i]));
+      bloomPass.strength = s.bloom;
+      if (s.fogColor) scene.fog.color.copy(s.fogColor);
+    }
+
+    function tickThemeTransition(dt) {
+      if (!themeTransition) return;
+      themeTransition.t = Math.min(themeTransition.t + dt / THEME_TRANS_DUR, 1);
+      const et = (t => t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t+2,2)/2)(themeTransition.t); // ease-in-out quad
+      const { from: f, to } = themeTransition;
+      keyL.color.lerpColors(f.keyColor, to.keyColor, et);
+      keyL.intensity  = f.keyI  + (to.keyI  - f.keyI)  * et;
+      sideL.color.lerpColors(f.sideColor, to.sideColor, et);
+      sideL.intensity = f.sideI + (to.sideI - f.sideI) * et;
+      fillL.color.lerpColors(f.fillColor, to.fillColor, et);
+      fillL.intensity = f.fillI + (to.fillI - f.fillI) * et;
+      ambL.color.lerpColors(f.ambColor, to.ambColor, et);
+      ambL.intensity  = f.ambI  + (to.ambI  - f.ambI)  * et;
+      activeMats.forEach((mat, i) => mat.color.lerpColors(f.matColors[i], to.matColors[i], et));
+      bloomPass.strength = f.bloom + (to.bloom - f.bloom) * et;
+      scene.fog.color.lerpColors(f.fogColor, to.fogColor, et);
+      if (themeTransition.t >= 1) themeTransition = null;
+    }
+
     function setTheme(name) {
+      if (name === currentTheme && !themeTransition) return;
+      // If a transition is already running, snapshot the mid-transition state as new "from"
+      const from = snapshotThreeState();
+      const to   = buildThemeTarget(name);
+      themeTransition = { from, to, t: 0 };
       currentTheme = name;
+      // CSS & UI updates are instant (CSS custom props have their own 0.6s transition)
       document.body.classList.remove('theme-dusk', 'theme-tide', 'theme-moss', 'theme-void');
       document.body.classList.add('theme-' + name);
       themeColorMeta.setAttribute('content', THEMES[name].bgColor);
-      applyThemeLights(name);
-      updateCubeMaterials();
       localStorage.setItem('vheda-theme', name);
       document.querySelectorAll('.theme-dot').forEach(d =>
         d.classList.toggle('active', d.dataset.theme === name)
       );
-      bloomPass.strength = BLOOM_STRENGTH[name] ?? 0.45;
     }
 
     // ── Shared geometry ───────────────────────────────────────────
@@ -851,8 +900,7 @@
     document.body.classList.remove('theme-dusk', 'theme-tide', 'theme-moss', 'theme-void');
     document.body.classList.add('theme-' + currentTheme);
     themeColorMeta.setAttribute('content', THEMES[currentTheme].bgColor);
-    applyThemeLights(currentTheme);
-    bloomPass.strength = BLOOM_STRENGTH[currentTheme] ?? 0.45;
+    applyThreeState(buildThemeTarget(currentTheme));
     document.querySelectorAll('.theme-dot').forEach(d =>
       d.classList.toggle('active', d.dataset.theme === currentTheme)
     );
@@ -1095,6 +1143,7 @@
       rafId = requestAnimationFrame(render);
       const dt = Math.min(clock.getDelta(), 0.05);
       const now = Date.now();
+      tickThemeTransition(dt);
       if (!dragging && (now - lastDrag) / 1000 > 2.5) theta += dt * 0.25;
       cubeRoot.position.y = Math.sin(now * 0.0007) * 0.18;
       positionCamera();
