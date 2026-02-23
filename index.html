@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vaibhav Heda — Full Stack Engineer</title>
+  <meta name="description" content="Vaibhav Heda — Full Stack Engineer based in India. Building Toolkitly, v-core and AI-powered tools. Specialising in realtime 3D, interaction and performance." />
+  <meta name="keywords" content="Vaibhav Heda, Full Stack Engineer, UI Engineer, Three.js, React, India, Toolkitly, v-core" />
+  <meta name="author" content="Vaibhav Heda" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://vheda.in/" />
+  <meta property="og:type"        content="website" />
+  <meta property="og:url"         content="https://vheda.in/" />
+  <meta property="og:title"       content="Vaibhav Heda — Full Stack Engineer" />
+  <meta property="og:description" content="Full Stack Engineer based in India. Building Toolkitly, v-core and AI-powered tools." />
+  <meta property="og:image"       content="https://vheda.in/og-image.png" />
+  <meta name="twitter:card"        content="summary_large_image" />
+  <meta name="twitter:title"       content="Vaibhav Heda — Full Stack Engineer" />
+  <meta name="twitter:description" content="Full Stack Engineer based in India. Building Toolkitly, v-core and AI-powered tools." />
+  <meta name="twitter:image"       content="https://vheda.in/og-image.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=Space+Mono&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Theme variables ─────────────────────────────────────────── */
+    :root {
+      --bg-start:  #130d0a;
+      --bg-end:    #070608;
+      --fg:        #d0cac2;
+      --fg-muted:  #585450;
+      --fg-dim:    #787068;
+      --accent:    #d4b09a;
+      --stroke:    #b8b2aa;
+      --border:    #252220;
+      --fill:      #d0cac2;
+      --fill-text: #080608;
+      --panel-bg:  rgba(7,6,8,0.96);
+      --card-bg:   rgba(10,8,9,0.88);
+      --dot-ring:  #383530;
+      --dot-active:#1fc94e;
+    }
+    body.theme-tide {
+      --bg-start:  #090e15;
+      --bg-end:    #030508;
+      --fg:        #c4d8e8;
+      --fg-muted:  #485870;
+      --fg-dim:    #607888;
+      --accent:    #7ab0cc;
+      --stroke:    #7aa8c4;
+      --border:    #182434;
+      --fill:      #c4d8e8;
+      --fill-text: #030810;
+      --panel-bg:  rgba(3,5,10,0.96);
+      --card-bg:   rgba(5,8,14,0.88);
+      --dot-ring:  #283848;
+      --dot-active:#1fc9c0;
+    }
+    body.theme-moss {
+      --bg-start:  #090d0a;
+      --bg-end:    #030506;
+      --fg:        #c0d8c4;
+      --fg-muted:  #485850;
+      --fg-dim:    #607868;
+      --accent:    #80b890;
+      --stroke:    #80a890;
+      --border:    #18241a;
+      --fill:      #c0d8c4;
+      --fill-text: #030806;
+      --panel-bg:  rgba(4,6,5,0.96);
+      --card-bg:   rgba(6,10,7,0.88);
+      --dot-ring:  #283828;
+      --dot-active:#1fc98e;
+    }
+    body.theme-void {
+      --bg-start:  #0d0d0d;
+      --bg-end:    #050505;
+      --fg:        #d0d0d0;
+      --fg-muted:  #585858;
+      --fg-dim:    #787878;
+      --accent:    #b0b0b0;
+      --stroke:    #909090;
+      --border:    #222222;
+      --fill:      #d0d0d0;
+      --fill-text: #080808;
+      --panel-bg:  rgba(5,5,5,0.96);
+      --card-bg:   rgba(8,8,8,0.88);
+      --dot-ring:  #303030;
+      --dot-active:#d8d8d8;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%; height: 100%;
+      background: radial-gradient(ellipse at 64% 50%, var(--bg-start) 0%, var(--bg-end) 65%);
+      overflow: hidden;
+      font-family: 'Space Grotesk', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      transition: background 0.6s ease;
+    }
+
+    canvas { display: block; cursor: grab; }
+    canvas:active { cursor: grabbing; }
+
+    /* ── Name ─────────────────────────────────────────────────────── */
+    .name {
+      position: fixed;
+      top: 2.4rem; left: 2.5rem;
+      line-height: 0.88;
+      letter-spacing: -0.04em;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      pointer-events: none;
+    }
+    .name-top {
+      display: flex;
+      align-items: center;
+      gap: 0.4em;
+    }
+    .name-v {
+      font-size: clamp(3.2rem, 6.5vw, 6rem);
+      color: var(--accent);
+      transition: color 0.6s;
+      line-height: 0.88;
+    }
+    .name-heda {
+      display: block;
+      font-size: clamp(3.2rem, 6.5vw, 6rem);
+      color: transparent;
+      -webkit-text-stroke: 1.5px var(--stroke);
+      transition: -webkit-text-stroke-color 0.6s;
+    }
+
+    /* ── Projects — floating cards, desktop ─────────────────────── */
+    .projects {
+      position: fixed;
+      top: 5.2rem; right: 2.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      z-index: 100;
+      pointer-events: none;
+    }
+    .projects.open { pointer-events: auto; }
+
+    /* Cards hidden by default, slide in from right when open */
+    .project-card {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.6rem 0.85rem;
+      border: 1.5px dashed var(--border);
+      border-radius: 0.5rem;
+      text-decoration: none;
+      position: relative;
+      overflow: hidden;
+      width: 220px;
+      background: var(--card-bg);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      transform: translateX(calc(100% + 70px));
+      opacity: 0;
+      transition: transform 0.45s cubic-bezier(0,0.55,0.45,1),
+                  opacity 0.3s ease,
+                  border-color 0.4s cubic-bezier(0,0.55,0.45,1);
+    }
+    .projects.open .project-card {
+      transform: translateX(0);
+      opacity: 1;
+      transition-delay: var(--delay, 0s);
+    }
+    .project-card::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: var(--accent);
+      transform: translateY(105%);
+      transition: transform 0.48s cubic-bezier(0,0.55,0.45,1);
+    }
+    .project-card:hover::before { transform: translateY(0); }
+    .project-card:hover { border-color: var(--accent); }
+    .project-card:hover .p-icon  { color: var(--fill-text); }
+    .project-card:hover .p-name  { color: var(--fill-text); }
+    .project-card:hover .p-domain { color: var(--fill-text); opacity: 0.5; }
+    .p-icon {
+      position: relative; z-index: 1;
+      width: 18px; height: 18px; flex-shrink: 0;
+      color: var(--fg-dim); transition: color 0.4s;
+    }
+    .p-icon svg { width: 100%; height: 100%; display: block; }
+    .p-info { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 0.08rem; }
+    .p-name {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.6rem; color: var(--fg);
+      letter-spacing: 0.02em; transition: color 0.4s;
+    }
+    .p-domain {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.46rem; color: var(--fg-muted);
+      letter-spacing: 0.04em; transition: color 0.4s, opacity 0.4s;
+    }
+
+    /* ── Projects trigger pill ────────────────────────────────────── */
+    #proj-btn {
+      position: fixed;
+      top: 2.4rem; right: 2.5rem;
+      display: block;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.55rem;
+      color: var(--fg-muted);
+      letter-spacing: 0.1em;
+      border: 1.5px dashed var(--border);
+      border-radius: 999px;
+      padding: 0.45rem 1.1rem;
+      background: transparent;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: color 0.35s, border-color 0.35s, border-style 0.35s;
+      z-index: 101;
+    }
+    #proj-btn:hover { color: var(--fg); border-color: var(--fg-muted); }
+    #proj-btn.open {
+      color: var(--fg);
+      border-style: solid;
+      border-color: var(--fg-muted);
+    }
+
+    /* ── Mobile: bottom drawer ────────────────────────────────────── */
+    @media (max-width: 800px) {
+      .projects {
+        top: auto; right: auto;
+        bottom: 0; left: 0;
+        width: 100%; height: auto;
+        padding: 1.4rem 1.5rem 2.2rem;
+        background: var(--panel-bg);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border-top: 1px solid var(--border);
+        transform: translateY(110%);
+        transition: transform 0.48s cubic-bezier(0,0.55,0.45,1);
+      }
+      .projects.open { transform: translateY(0); pointer-events: auto; }
+      .project-card {
+        transform: none !important; opacity: 1 !important;
+        transition: border-color 0.4s !important;
+        width: 100%; background: transparent;
+        backdrop-filter: none; -webkit-backdrop-filter: none;
+      }
+    }
+
+    /* ── Bottom-left ──────────────────────────────────────────────── */
+    .bottom-left {
+      position: fixed;
+      bottom: 2.5rem; left: 2.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .local-time-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.6rem;
+      color: var(--fg-dim);
+      letter-spacing: 0.08em;
+    }
+    .clock-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.55rem;
+    }
+    .clock {
+      font-family: 'Space Mono', monospace;
+      font-weight: 700;
+      font-size: clamp(2.2rem, 4vw, 3rem);
+      color: var(--fg);
+      letter-spacing: -0.03em;
+      display: flex;
+      align-items: baseline;
+      line-height: 1;
+      transition: color 0.6s;
+    }
+    .clock-colon { line-height: 1; padding: 0 0.02em; }
+    .digit {
+      position: relative;
+      overflow: hidden;
+      display: inline-block;
+      height: 1.05em;
+      vertical-align: top;
+    }
+    .digit::before { content: '0'; visibility: hidden; display: block; line-height: 1; }
+    .digit span { position: absolute; top: 0; left: 0; width: 100%; text-align: center; line-height: 1; }
+    @keyframes d-out { from { transform: translateY(0); }    to { transform: translateY(-115%); } }
+    @keyframes d-in  { from { transform: translateY(115%); } to { transform: translateY(0); } }
+
+    .ampm-indicator { display: flex; flex-direction: column; gap: 4px; margin-top: 5px; }
+    .ampm-indicator span {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.45rem;
+      color: var(--fg-muted);
+      letter-spacing: 0.04em;
+      transition: color 0.6s;
+    }
+    .dot-row { display: flex; align-items: center; gap: 5px; }
+    .dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      border: 1.5px solid var(--dot-ring);
+      flex-shrink: 0;
+      transition: background 0.4s, border-color 0.4s;
+    }
+    .dot.active {
+      background: var(--dot-active);
+      border-color: var(--dot-active);
+      animation: dot-breathe 2s ease-in-out infinite;
+    }
+    @keyframes dot-breathe {
+      0%, 100% { opacity: 1;   box-shadow: 0 0 5px 1px rgba(31,201,78,0.45); }
+      50%       { opacity: 0.2; box-shadow: none; }
+    }
+    .role-block { margin-top: 0.1rem; }
+    .role {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--fg-dim);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: color 0.6s;
+    }
+    .location {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--fg-dim);
+      margin-top: 0.25rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      transition: color 0.6s;
+    }
+
+    /* ── Theme switcher — bottom center ──────────────────────────── */
+    .theme-switcher {
+      position: fixed;
+      bottom: 2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: row;
+      gap: 0.65rem;
+      align-items: center;
+      z-index: 10;
+    }
+    .theme-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      cursor: pointer;
+      padding: 0;
+      border: 1.5px solid transparent;
+      opacity: 0.35;
+      transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
+    }
+    .theme-dot[data-theme="dusk"] { background: #d4b09a; }
+    .theme-dot[data-theme="tide"] { background: #7ab0cc; }
+    .theme-dot[data-theme="moss"] { background: #80b890; }
+    .theme-dot[data-theme="void"] { background: #b0b0b0; }
+    .theme-dot:hover { opacity: 0.75; transform: scale(1.25); }
+    .theme-dot.active { opacity: 1; transform: scale(1.15); }
+    .theme-dot[data-theme="dusk"].active { border-color: #d4b09a; box-shadow: 0 0 5px 1px rgba(212,176,154,0.5); }
+    .theme-dot[data-theme="tide"].active { border-color: #7ab0cc; box-shadow: 0 0 5px 1px rgba(122,176,204,0.5); }
+    .theme-dot[data-theme="moss"].active { border-color: #80b890; box-shadow: 0 0 5px 1px rgba(128,184,144,0.5); }
+    .theme-dot[data-theme="void"].active { border-color: #b0b0b0; box-shadow: 0 0 5px 1px rgba(176,176,176,0.5); }
+
+    /* ── Links ────────────────────────────────────────────────────── */
+    .links {
+      position: fixed;
+      bottom: 2.5rem; right: 2.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.55rem;
+    }
+    .links a {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--fg-muted);
+      text-decoration: none;
+      letter-spacing: 0.06em;
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.52rem 1.25rem;
+      border: 1.5px dashed var(--border);
+      border-radius: 999px;
+      overflow: hidden;
+      transition: color 0.45s cubic-bezier(0,0.55,0.45,1),
+                  border-color 0.45s cubic-bezier(0,0.55,0.45,1);
+    }
+    .links a::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--fill);
+      transform: translateY(105%);
+      transition: transform 0.5s cubic-bezier(0,0.55,0.45,1);
+    }
+    .links a:hover { color: var(--fill-text); border-color: var(--fill); }
+    .links a:hover::before { transform: translateY(0); }
+    .links a span { position: relative; z-index: 1; }
+
+    /* ── Googly eye (single oval) ────────────────────────────────── */
+    .googly-eye {
+      width: 20px; height: 28px;
+      border-radius: 50% 50% 44% 44% / 56% 56% 44% 44%;
+      background: #f5f0eb;
+      border: 1.5px solid rgba(0,0,0,0.6);
+      position: relative;
+      flex-shrink: 0;
+    }
+    .googly-pupil {
+      position: absolute;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: #141210;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      will-change: transform;
+    }
+
+    /* ── Drag hint overlay — full screen, auto-fades ─────────────── */
+    #drag-hint {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      z-index: 200;
+      opacity: 1;
+      transition: opacity 0.9s ease;
+    }
+    #drag-hint.gone { opacity: 0; }
+    #drag-hint span {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.6rem;
+      color: var(--fg);
+      letter-spacing: 0.16em;
+      padding: 0.55rem 1.4rem;
+      background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 999px;
+    }
+
+  </style>
+</head>
+<body class="theme-dusk">
+
+  <canvas id="c"></canvas>
+
+  <div class="name">
+    <div class="name-top">
+      <span class="name-v">V</span>
+      <span class="googly-eye" aria-hidden="true"><span class="googly-pupil"></span></span>
+    </div>
+    <span class="name-heda">HEDA</span>
+  </div>
+
+  <div class="projects">
+    <a href="https://toolkitly.cloud" class="project-card" style="--delay:0.18s" target="_blank" rel="noopener">
+      <div class="p-icon">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15.1 3.9a4 4 0 0 0-5.3 5.2L3.5 15.5a1.5 1.5 0 1 0 2.1 2.1l6.4-6.3A4 4 0 0 0 15.1 3.9z"/>
+          <circle cx="13.5" cy="6.5" r="1.1" fill="currentColor" stroke="none"/>
+        </svg>
+      </div>
+      <div class="p-info"><div class="p-name">Toolkitly</div><div class="p-domain">.cloud</div></div>
+    </a>
+    <a href="https://v-core.cloud" class="project-card" style="--delay:0.26s" target="_blank" rel="noopener">
+      <div class="p-icon">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="10,2 16.9,6 16.9,14 10,18 3.1,14 3.1,6"/>
+          <polygon points="10,6.5 13.5,8.5 13.5,12.5 10,14.5 6.5,12.5 6.5,8.5"/>
+        </svg>
+      </div>
+      <div class="p-info"><div class="p-name">v-core</div><div class="p-domain">.cloud</div></div>
+    </a>
+    <a href="#" class="project-card" style="--delay:0.34s">
+      <div class="p-icon">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3.5" y="7.5" width="13" height="10" rx="1.5"/>
+          <path d="M7 7.5V6a3 3 0 0 1 6 0v1.5"/>
+          <circle cx="8" cy="13" r="1" fill="currentColor" stroke="none"/>
+          <circle cx="12" cy="13" r="1" fill="currentColor" stroke="none"/>
+          <path d="M8 16h4"/>
+        </svg>
+      </div>
+      <div class="p-info"><div class="p-name">Doc Bot</div><div class="p-domain">AI assistant</div></div>
+    </a>
+  </div>
+  <button id="proj-btn">PROJECTS ↑</button>
+
+  <div class="bottom-left">
+    <div class="local-time-label">LOCAL TIME (UTC+5:30)</div>
+    <div class="clock-row">
+      <div class="clock">
+        <div class="digit" id="d0"><span>0</span></div>
+        <div class="digit" id="d1"><span>0</span></div>
+        <span class="clock-colon">:</span>
+        <div class="digit" id="d2"><span>0</span></div>
+        <div class="digit" id="d3"><span>0</span></div>
+      </div>
+      <div class="ampm-indicator">
+        <div class="dot-row"><div class="dot" id="dot-am"></div><span>AM</span></div>
+        <div class="dot-row"><div class="dot" id="dot-pm"></div><span>PM</span></div>
+      </div>
+    </div>
+    <div class="role-block">
+      <div class="role">Full Stack Engineer</div>
+      <div class="location">India</div>
+    </div>
+  </div>
+
+  <div class="theme-switcher">
+    <button class="theme-dot active" data-theme="dusk"  aria-label="Dusk theme"></button>
+    <button class="theme-dot"        data-theme="tide"  aria-label="Tide theme"></button>
+    <button class="theme-dot"        data-theme="moss"  aria-label="Moss theme"></button>
+    <button class="theme-dot"        data-theme="void"  aria-label="Void theme"></button>
+  </div>
+
+  <nav class="links">
+    <a href="https://github.com/vaibhavheda" target="_blank" rel="noopener"><span>Github</span></a>
+    <a href="https://www.linkedin.com/in/vaibhav-heda/" target="_blank" rel="noopener"><span>LinkedIn</span></a>
+    <a href="mailto:Vaibhav.heda799@gmail.com"><span>Email</span></a>
+  </nav>
+
+  <div id="drag-hint"><span>drag to rotate</span></div>
+
+  <script type="module">
+    import * as THREE from 'https://esm.sh/three@0.165.0';
+    import { RoundedBoxGeometry } from 'https://esm.sh/three@0.165.0/examples/jsm/geometries/RoundedBoxGeometry';
+
+    // ── Renderer ──────────────────────────────────────────────────
+    const canvas = document.getElementById('c');
+    const renderer = new THREE.WebGLRenderer({
+      canvas, antialias: true, alpha: true,
+      powerPreference: 'high-performance',
+    });
+    renderer.setClearColor(0x000000, 0);
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 1.0));
+    renderer.toneMapping         = THREE.LinearToneMapping;
+    renderer.toneMappingExposure = 1.0;
+    renderer.outputColorSpace    = THREE.SRGBColorSpace;
+    renderer.setSize(innerWidth, innerHeight);
+
+    const scene = new THREE.Scene();
+
+    // ── Camera ────────────────────────────────────────────────────
+    const camera = new THREE.PerspectiveCamera(36, innerWidth / innerHeight, 0.1, 100);
+    let theta = 0.72, phi = 1.12;
+    let CAM_R = 12;
+
+    function positionCamera() {
+      camera.position.set(
+        CAM_R * Math.sin(phi) * Math.sin(theta),
+        CAM_R * Math.cos(phi),
+        CAM_R * Math.sin(phi) * Math.cos(theta)
+      );
+      camera.lookAt(0, 0, 0);
+    }
+    positionCamera();
+
+    // ── Environment map ───────────────────────────────────────────
+    const pmrem = new THREE.PMREMGenerator(renderer);
+    pmrem.compileEquirectangularShader();
+    const envScene  = new THREE.Scene();
+    const envSphere = new THREE.Mesh(
+      new THREE.SphereGeometry(10, 16, 16),
+      new THREE.MeshBasicMaterial({ side: THREE.BackSide, vertexColors: true })
+    );
+    const posAttr = envSphere.geometry.attributes.position;
+    const colArr  = new Float32Array(posAttr.count * 3);
+    const SX = 0.58, SY = 0.72, SZ = 0.38;
+    for (let i = 0; i < posAttr.count; i++) {
+      const px = posAttr.getX(i) / 10, py = posAttr.getY(i) / 10, pz = posAttr.getZ(i) / 10;
+      const t  = (py + 1) / 2;
+      let r = 0.14 + t * 0.36, g = 0.10 + t * 0.20, b = 0.10 + t * 0.16;
+      const sun = Math.pow(Math.max(0, px * SX + py * SY + pz * SZ), 3);
+      r += sun * 0.9; g += sun * 0.55; b += sun * 0.2;
+      colArr[i*3] = Math.min(1,r); colArr[i*3+1] = Math.min(1,g); colArr[i*3+2] = Math.min(1,b);
+    }
+    envSphere.geometry.setAttribute('color', new THREE.BufferAttribute(colArr, 3));
+    envScene.add(envSphere);
+    const envMap = pmrem.fromScene(envScene).texture;
+    scene.environment = envMap;
+    scene.environmentIntensity = 1.0;
+    pmrem.dispose();
+
+    // ── Lights ────────────────────────────────────────────────────
+    const keyL  = new THREE.DirectionalLight(0xffdcc8, 2.4); keyL.position.set(-4,-9,5); scene.add(keyL);
+    const sideL = new THREE.DirectionalLight(0xc8d8ff, 2.0); sideL.position.set(9,1,4);  scene.add(sideL);
+    const fillL = new THREE.PointLight(0xff5040, 60, 24);    fillL.position.set(0,6,2);  scene.add(fillL);
+    const ambL  = new THREE.AmbientLight(0xffecd8, 0.3);     scene.add(ambL);
+
+    // ── Themes ────────────────────────────────────────────────────
+    const THEMES = {
+      dusk: {
+        cubeBottom: 0xbe7858, cubeTop: 0xf2e2d8,
+        keyColor: 0xffdcc8, keyI: 2.4,
+        sideColor: 0xc8d8ff, sideI: 2.0,
+        fillColor: 0xff5040, fillI: 60,
+        ambColor: 0xffecd8,  ambI: 0.3,
+      },
+      tide: {
+        cubeBottom: 0x3a6888, cubeTop: 0xc8dce8,
+        keyColor: 0xc8e0ff, keyI: 2.6,
+        sideColor: 0xffd8c0, sideI: 1.8,
+        fillColor: 0x2060c0, fillI: 70,
+        ambColor: 0xd0e8f8,  ambI: 0.35,
+      },
+      moss: {
+        cubeBottom: 0x4a7858, cubeTop: 0xc8e0d0,
+        keyColor: 0xd0ffe0, keyI: 2.2,
+        sideColor: 0xffd8c0, sideI: 1.8,
+        fillColor: 0x30b060, fillI: 55,
+        ambColor: 0xd0f8e0,  ambI: 0.3,
+      },
+      void: {
+        cubeBottom: 0x383838, cubeTop: 0xd8d8d8,
+        keyColor: 0xffffff, keyI: 2.2,
+        sideColor: 0xdde0ff, sideI: 1.6,
+        fillColor: 0x888888, fillI: 50,
+        ambColor: 0xffffff,  ambI: 0.25,
+      },
+    };
+
+    let currentTheme = localStorage.getItem('vheda-theme') || 'dusk';
+
+    function applyThemeLights(name) {
+      const th = THEMES[name];
+      keyL.color.setHex(th.keyColor);   keyL.intensity  = th.keyI;
+      sideL.color.setHex(th.sideColor); sideL.intensity = th.sideI;
+      fillL.color.setHex(th.fillColor); fillL.intensity = th.fillI;
+      ambL.color.setHex(th.ambColor);   ambL.intensity  = th.ambI;
+    }
+
+    function updateCubeMaterials() {
+      const th = THEMES[currentTheme];
+      const b = new THREE.Color(th.cubeBottom), t = new THREE.Color(th.cubeTop);
+      activeMats.forEach((mat, i) => {
+        const pct = GRID <= 1 ? 0.5 : i / (GRID - 1);
+        mat.color.lerpColors(b, t, pct);
+      });
+    }
+
+    function setTheme(name) {
+      currentTheme = name;
+      document.body.className = 'theme-' + name;
+      applyThemeLights(name);
+      updateCubeMaterials();
+      localStorage.setItem('vheda-theme', name);
+      document.querySelectorAll('.theme-dot').forEach(d =>
+        d.classList.toggle('active', d.dataset.theme === name)
+      );
+    }
+
+    // ── Shared geometry ───────────────────────────────────────────
+    const STEP  = 1.0;
+    const CSIZE = 0.82;
+    const geo   = new RoundedBoxGeometry(CSIZE, CSIZE, CSIZE, 3, 0.17);
+
+    // ── Dynamic cube state ────────────────────────────────────────
+    const cubeRoot = new THREE.Object3D();
+    scene.add(cubeRoot);
+    let cubelets = [], MOVES = [], GRID = 0, activeMats = [];
+
+    function getN() {
+      const w = innerWidth;
+      if (w >= 1400) return 5;
+      if (w >= 900)  return 4;
+      if (w >= 600)  return 3;
+      if (w >= 380)  return 2;
+      return 1;
+    }
+
+    function makeGradientMats(N) {
+      const th = THEMES[currentTheme];
+      const b  = new THREE.Color(th.cubeBottom);
+      const t  = new THREE.Color(th.cubeTop);
+      return Array.from({ length: N }, (_, i) => {
+        const pct = N === 1 ? 0.5 : i / (N - 1);
+        return new THREE.MeshStandardMaterial({
+          color: new THREE.Color().lerpColors(b, t, pct),
+          metalness: 0.06, roughness: 0.06, envMapIntensity: 1.8,
+        });
+      });
+    }
+
+    function snapPos(pos) {
+      const half = (GRID - 1) / 2;
+      const idx  = Math.round(pos / STEP + half);
+      return (Math.max(0, Math.min(GRID - 1, idx)) - half) * STEP;
+    }
+
+    // ── Face-turn state — declared before buildCube ───────────────
+    const TURN_DUR = 0.72, TURN_GAP = 1.8;
+    let anim = null, waitTimer = TURN_GAP;
+
+    function buildCube(N) {
+      if (anim) {
+        anim.pivot.rotation[anim.axis] = anim.target;
+        anim.pivot.updateMatrixWorld(true);
+        anim.face.forEach(c => cubeRoot.attach(c));
+        scene.remove(anim.pivot);
+        anim = null;
+      }
+      cubelets.forEach(c => cubeRoot.remove(c));
+      cubelets = [];
+      activeMats.forEach(m => m.dispose());
+      activeMats = makeGradientMats(N);
+      GRID = N;
+      const half = (N - 1) / 2;
+      for (let xi = 0; xi < N; xi++)
+        for (let yi = 0; yi < N; yi++)
+          for (let zi = 0; zi < N; zi++) {
+            const mesh = new THREE.Mesh(geo, activeMats[yi]);
+            mesh.position.set((xi-half)*STEP, (yi-half)*STEP, (zi-half)*STEP);
+            cubeRoot.add(mesh); cubelets.push(mesh);
+          }
+      const layers = Array.from({ length: N }, (_, i) => (i - half) * STEP);
+      MOVES = [];
+      ['x','y','z'].forEach(axis => layers.forEach(layer =>
+        [Math.PI/2, -Math.PI/2].forEach(angle => MOVES.push({ axis, layer, angle }))
+      ));
+      CAM_R = Math.max(4, N * 3.4);
+      waitTimer = TURN_GAP;
+    }
+
+    // Apply saved theme, then build
+    document.body.className = 'theme-' + currentTheme;
+    applyThemeLights(currentTheme);
+    document.querySelectorAll('.theme-dot').forEach(d =>
+      d.classList.toggle('active', d.dataset.theme === currentTheme)
+    );
+    buildCube(getN());
+
+    // ── Face-turn helpers ─────────────────────────────────────────
+    function easeInOut(t) { return (1 - Math.cos(Math.PI * t)) / 2; }
+
+    function startTurn() {
+      if (GRID < 2) return;
+      const m = MOVES[Math.floor(Math.random() * MOVES.length)];
+      const pivot = new THREE.Object3D();
+      pivot.position.copy(cubeRoot.position);
+      scene.add(pivot);
+      const face = cubelets.filter(c => Math.abs(c.position[m.axis] - m.layer) < STEP * 0.45);
+      if (!face.length) return;
+      face.forEach(c => pivot.attach(c));
+      anim = { pivot, face, axis: m.axis, target: m.angle, elapsed: 0, applied: 0 };
+    }
+
+    function tickTurn(dt) {
+      anim.pivot.position.copy(cubeRoot.position);
+      anim.elapsed += dt;
+      const t  = Math.min(anim.elapsed / TURN_DUR, 1);
+      const ea = easeInOut(t) * anim.target;
+      anim.pivot.rotation[anim.axis] += ea - anim.applied;
+      anim.applied = ea;
+      if (t >= 1) {
+        anim.pivot.rotation[anim.axis] = anim.target;
+        anim.pivot.updateMatrixWorld(true);
+        anim.face.forEach(c => {
+          cubeRoot.attach(c);
+          c.position.x = snapPos(c.position.x);
+          c.position.y = snapPos(c.position.y);
+          c.position.z = snapPos(c.position.z);
+        });
+        scene.remove(anim.pivot);
+        anim = null;
+        waitTimer = TURN_GAP;
+      }
+    }
+
+    // ── Drag-to-orbit ─────────────────────────────────────────────
+    let dragging = false, prevX = 0, prevY = 0, lastDrag = 0;
+    const onDown = (x,y) => { dragging=true; prevX=x; prevY=y; };
+    const onMove = (x,y) => {
+      if (!dragging) return;
+      theta -= (x-prevX)*0.006;
+      phi    = Math.max(0.22, Math.min(Math.PI-0.22, phi-(y-prevY)*0.006));
+      prevX=x; prevY=y; lastDrag=Date.now();
+    };
+    const onUp = () => { dragging=false; };
+
+    canvas.addEventListener('mousedown',  e => onDown(e.clientX, e.clientY));
+    window.addEventListener('mousemove',  e => onMove(e.clientX, e.clientY));
+    window.addEventListener('mouseup',    onUp);
+    canvas.addEventListener('touchstart', e => onDown(e.touches[0].clientX, e.touches[0].clientY), { passive:true });
+    window.addEventListener('touchmove',  e => onMove(e.touches[0].clientX, e.touches[0].clientY), { passive:true });
+    window.addEventListener('touchend',   onUp);
+
+    window.addEventListener('resize', () => {
+      renderer.setSize(innerWidth, innerHeight);
+      camera.aspect = innerWidth / innerHeight;
+      camera.updateProjectionMatrix();
+      const newN = getN();
+      if (newN !== GRID) buildCube(newN);
+    });
+    // ── Drag hint overlay — auto-fade after 2.5s ─────────────────
+    const dragHint = document.getElementById('drag-hint');
+    setTimeout(() => {
+      dragHint.classList.add('gone');
+      setTimeout(() => dragHint.remove(), 1000);
+    }, 2500);
+
+    // ── Projects — floating cards + pill ─────────────────────────
+    const projBtn   = document.getElementById('proj-btn');
+    const projPanel = document.querySelector('.projects');
+    let panelOpen = false;
+
+    const openDrawer = () => {
+      panelOpen = true;
+      projPanel.classList.add('open');
+      projBtn.classList.add('open');
+      projBtn.textContent = '✕';
+    };
+    const closeDrawer = () => {
+      panelOpen = false;
+      projPanel.classList.remove('open');
+      projBtn.classList.remove('open');
+      projBtn.textContent = 'PROJECTS ↑';
+    };
+
+    projBtn.addEventListener('click', () => panelOpen ? closeDrawer() : openDrawer());
+    canvas.addEventListener('click', closeDrawer);
+    canvas.addEventListener('touchstart', e => {
+      if (!projPanel.contains(e.target)) closeDrawer();
+    }, { passive: true });
+
+    // ── Googly eye ────────────────────────────────────────────────
+    const googlyEye   = document.querySelector('.googly-eye');
+    const googlyPupil = googlyEye && googlyEye.querySelector('.googly-pupil');
+    if (googlyEye && googlyPupil) {
+      window.addEventListener('mousemove', e => {
+        const rect = googlyEye.getBoundingClientRect();
+        const cx = rect.left + rect.width  / 2;
+        const cy = rect.top  + rect.height / 2;
+        const dx = e.clientX - cx, dy = e.clientY - cy;
+        const a  = Math.atan2(dy, dx);
+        const d  = Math.min(5, Math.sqrt(dx*dx + dy*dy));
+        googlyPupil.style.transform = `translate(calc(-50% + ${(Math.cos(a)*d).toFixed(2)}px), calc(-50% + ${(Math.sin(a)*d).toFixed(2)}px))`;
+      });
+    }
+
+    // ── Theme switching ───────────────────────────────────────────
+    document.querySelectorAll('.theme-dot').forEach(dot => {
+      dot.addEventListener('click', () => setTheme(dot.dataset.theme));
+    });
+
+    // ── Clock ─────────────────────────────────────────────────────
+    const digitEls = [0,1,2,3].map(i => document.getElementById('d'+i));
+    const dotAm    = document.getElementById('dot-am');
+    const dotPm    = document.getElementById('dot-pm');
+
+    function setDigit(wrap, ch) {
+      const cur = wrap.querySelector('span');
+      if (cur && cur.textContent === ch) return;
+      const nxt = document.createElement('span');
+      nxt.textContent = ch;
+      nxt.style.animation = 'd-in 0.38s cubic-bezier(0,0.55,0.45,1) forwards';
+      wrap.appendChild(nxt);
+      if (cur) {
+        cur.style.animation = 'd-out 0.38s cubic-bezier(0,0.55,0.45,1) forwards';
+        setTimeout(() => cur.remove(), 420);
+      }
+    }
+
+    function updateClock() {
+      const now  = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+      const h = now.getHours(), m = now.getMinutes();
+      const isAm = h < 12, h12 = h % 12 || 12;
+      const str = String(h12).padStart(2,'0') + String(m).padStart(2,'0');
+      str.split('').forEach((ch,i) => setDigit(digitEls[i], ch));
+      dotAm.classList.toggle('active', isAm);
+      dotPm.classList.toggle('active', !isAm);
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    // ── Render loop ───────────────────────────────────────────────
+    const clock = new THREE.Clock();
+    (function render() {
+      requestAnimationFrame(render);
+      const dt = Math.min(clock.getDelta(), 0.05);
+      const now = Date.now();
+      if (!dragging && (now - lastDrag) / 1000 > 2.5) theta += dt * 0.25;
+      cubeRoot.position.y = Math.sin(now * 0.0007) * 0.18;
+      positionCamera();
+      if (anim) tickTurn(dt);
+      else { waitTimer -= dt; if (waitTimer <= 0) startTurn(); }
+      renderer.render(scene, camera);
+    })();
+
+  </script>
+</body>
+</html>
