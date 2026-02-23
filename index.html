@@ -18,10 +18,34 @@
   <meta name="twitter:title"       content="Vaibhav Heda — Full Stack Engineer" />
   <meta name="twitter:description" content="Full Stack Engineer based in India. Building Toolkitly, v-core and AI-powered tools." />
   <meta name="twitter:image"       content="https://vheda.in/og-image.png" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://esm.sh; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://esm.sh; frame-ancestors 'none';" />
+  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <meta name="theme-color" content="#130d0a" id="theme-color-meta" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%2312130f'/><path d='M6 7 L16 25 L26 7' stroke='%23d4b09a' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round' fill='none'/></svg>" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=Space+Mono&display=swap" rel="stylesheet" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Vaibhav Heda",
+    "jobTitle": "Full Stack Engineer",
+    "url": "https://vheda.in",
+    "sameAs": [
+      "https://github.com/vaibhavheda",
+      "https://www.linkedin.com/in/vaibhav-heda/"
+    ],
+    "address": { "@type": "PostalAddress", "addressCountry": "IN" },
+    "knowsAbout": ["Three.js", "React", "Realtime 3D", "Web Performance", "UI Engineering"]
+  }
+  </script>
   <style>
+    /* ── Animatable custom properties (Houdini) ─────────────────── */
+    @property --bg-start { syntax: '<color>'; inherits: true; initial-value: #130d0a; }
+    @property --bg-end   { syntax: '<color>'; inherits: true; initial-value: #070608; }
+
     /* ── Theme variables ─────────────────────────────────────────── */
     :root {
       --bg-start:  #130d0a;
@@ -96,7 +120,7 @@
       overflow: hidden;
       font-family: 'Space Grotesk', sans-serif;
       -webkit-font-smoothing: antialiased;
-      transition: background 0.6s ease;
+      transition: --bg-start 0.6s ease, --bg-end 0.6s ease;
     }
 
     canvas { display: block; cursor: grab; }
@@ -111,11 +135,6 @@
       font-family: 'Space Grotesk', sans-serif;
       font-weight: 700;
       pointer-events: none;
-    }
-    .name-top {
-      display: flex;
-      align-items: center;
-      gap: 0.4em;
     }
     .name-v {
       font-size: clamp(3.2rem, 6.5vw, 6rem);
@@ -206,9 +225,9 @@
       display: block;
       font-family: 'Space Mono', monospace;
       font-size: 0.55rem;
-      color: var(--fg-muted);
+      color: var(--fg-dim);
       letter-spacing: 0.1em;
-      border: 1.5px dashed var(--border);
+      border: 1.5px dashed var(--fg-muted);
       border-radius: 999px;
       padding: 0.45rem 1.1rem;
       background: transparent;
@@ -312,7 +331,7 @@
       animation: dot-breathe 2s ease-in-out infinite;
     }
     @keyframes dot-breathe {
-      0%, 100% { opacity: 1;   box-shadow: 0 0 5px 1px rgba(31,201,78,0.45); }
+      0%, 100% { opacity: 1;   box-shadow: 0 0 5px 1px color-mix(in srgb, var(--dot-active) 45%, transparent); }
       50%       { opacity: 0.2; box-shadow: none; }
     }
     .role-block { margin-top: 0.1rem; }
@@ -378,7 +397,7 @@
     .links a {
       font-family: 'Space Mono', monospace;
       font-size: 0.62rem;
-      color: var(--fg-muted);
+      color: var(--fg-dim);
       text-decoration: none;
       letter-spacing: 0.06em;
       position: relative;
@@ -386,7 +405,7 @@
       align-items: center;
       justify-content: center;
       padding: 0.52rem 1.25rem;
-      border: 1.5px dashed var(--border);
+      border: 1.5px dashed var(--fg-muted);
       border-radius: 999px;
       overflow: hidden;
       transition: color 0.45s cubic-bezier(0,0.55,0.45,1),
@@ -404,24 +423,6 @@
     .links a:hover::before { transform: translateY(0); }
     .links a span { position: relative; z-index: 1; }
 
-    /* ── Googly eye (single oval) ────────────────────────────────── */
-    .googly-eye {
-      width: 20px; height: 28px;
-      border-radius: 50% 50% 44% 44% / 56% 56% 44% 44%;
-      background: #f5f0eb;
-      border: 1.5px solid rgba(0,0,0,0.6);
-      position: relative;
-      flex-shrink: 0;
-    }
-    .googly-pupil {
-      position: absolute;
-      width: 10px; height: 10px;
-      border-radius: 50%;
-      background: #141210;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      will-change: transform;
-    }
 
     /* ── Drag hint overlay — full screen, auto-fades ─────────────── */
     #drag-hint {
@@ -436,6 +437,16 @@
       transition: opacity 0.9s ease;
     }
     #drag-hint.gone { opacity: 0; }
+
+    /* ── Reduced motion ───────────────────────────────────────────── */
+    @media (prefers-reduced-motion: reduce) {
+      @keyframes d-out { from { opacity: 1; } to { opacity: 0; } }
+      @keyframes d-in  { from { opacity: 0; } to { opacity: 1; } }
+      .project-card, .links a, .project-card::before, .links a::before {
+        transition-duration: 0.01ms !important;
+      }
+      .dot.active { animation: none; }
+    }
     #drag-hint span {
       font-family: 'Space Mono', monospace;
       font-size: 0.6rem;
@@ -453,18 +464,15 @@
 </head>
 <body class="theme-dusk">
 
-  <canvas id="c"></canvas>
+  <canvas id="c" role="img" aria-label="Animated 3D cube"></canvas>
 
-  <div class="name">
-    <div class="name-top">
-      <span class="name-v">V</span>
-      <span class="googly-eye" aria-hidden="true"><span class="googly-pupil"></span></span>
-    </div>
-    <span class="name-heda">HEDA</span>
+  <div class="name" aria-label="Vaibhav Heda">
+    <span class="name-v" aria-hidden="true">V</span>
+    <span class="name-heda" aria-hidden="true">HEDA</span>
   </div>
 
   <div class="projects">
-    <a href="https://toolkitly.cloud" class="project-card" style="--delay:0.18s" target="_blank" rel="noopener">
+    <a href="https://toolkitly.cloud" class="project-card" style="--delay:0.18s" target="_blank" rel="noopener noreferrer">
       <div class="p-icon">
         <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="M15.1 3.9a4 4 0 0 0-5.3 5.2L3.5 15.5a1.5 1.5 0 1 0 2.1 2.1l6.4-6.3A4 4 0 0 0 15.1 3.9z"/>
@@ -473,7 +481,7 @@
       </div>
       <div class="p-info"><div class="p-name">Toolkitly</div><div class="p-domain">.cloud</div></div>
     </a>
-    <a href="https://v-core.cloud" class="project-card" style="--delay:0.26s" target="_blank" rel="noopener">
+    <a href="https://v-core.cloud" class="project-card" style="--delay:0.26s" target="_blank" rel="noopener noreferrer">
       <div class="p-icon">
         <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
           <polygon points="10,2 16.9,6 16.9,14 10,18 3.1,14 3.1,6"/>
@@ -482,7 +490,7 @@
       </div>
       <div class="p-info"><div class="p-name">v-core</div><div class="p-domain">.cloud</div></div>
     </a>
-    <a href="#" class="project-card" style="--delay:0.34s">
+    <div class="project-card" style="--delay:0.34s">
       <div class="p-icon">
         <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
           <rect x="3.5" y="7.5" width="13" height="10" rx="1.5"/>
@@ -493,7 +501,7 @@
         </svg>
       </div>
       <div class="p-info"><div class="p-name">Doc Bot</div><div class="p-domain">AI assistant</div></div>
-    </a>
+    </div>
   </div>
   <button id="proj-btn">PROJECTS ↑</button>
 
@@ -526,8 +534,8 @@
   </div>
 
   <nav class="links">
-    <a href="https://github.com/vaibhavheda" target="_blank" rel="noopener"><span>Github</span></a>
-    <a href="https://www.linkedin.com/in/vaibhav-heda/" target="_blank" rel="noopener"><span>LinkedIn</span></a>
+    <a href="https://github.com/vaibhavheda" target="_blank" rel="noopener noreferrer"><span>Github</span></a>
+    <a href="https://www.linkedin.com/in/vaibhav-heda/" target="_blank" rel="noopener noreferrer"><span>LinkedIn</span></a>
     <a href="mailto:Vaibhav.heda799@gmail.com"><span>Email</span></a>
   </nav>
 
@@ -544,7 +552,7 @@
       powerPreference: 'high-performance',
     });
     renderer.setClearColor(0x000000, 0);
-    renderer.setPixelRatio(Math.min(devicePixelRatio, 1.0));
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
     renderer.toneMapping         = THREE.LinearToneMapping;
     renderer.toneMappingExposure = 1.0;
     renderer.outputColorSpace    = THREE.SRGBColorSpace;
@@ -589,45 +597,51 @@
     envSphere.geometry.setAttribute('color', new THREE.BufferAttribute(colArr, 3));
     envScene.add(envSphere);
     const envMap = pmrem.fromScene(envScene).texture;
+    envSphere.geometry.dispose();
+    envSphere.material.dispose();
     scene.environment = envMap;
     scene.environmentIntensity = 1.0;
     pmrem.dispose();
 
     // ── Lights ────────────────────────────────────────────────────
-    const keyL  = new THREE.DirectionalLight(0xffdcc8, 2.4); keyL.position.set(-4,-9,5); scene.add(keyL);
-    const sideL = new THREE.DirectionalLight(0xc8d8ff, 2.0); sideL.position.set(9,1,4);  scene.add(sideL);
-    const fillL = new THREE.PointLight(0xff5040, 60, 24);    fillL.position.set(0,6,2);  scene.add(fillL);
-    const ambL  = new THREE.AmbientLight(0xffecd8, 0.3);     scene.add(ambL);
+    const keyL  = new THREE.DirectionalLight(0xffdcc8, 1.6); keyL.position.set(-4,-9,5); scene.add(keyL);
+    const sideL = new THREE.DirectionalLight(0xc8d8ff, 1.4); sideL.position.set(9,1,4);  scene.add(sideL);
+    const fillL = new THREE.PointLight(0xff5040, 40, 24);    fillL.position.set(0,6,2);  scene.add(fillL);
+    const ambL  = new THREE.AmbientLight(0xffecd8, 0.4);     scene.add(ambL);
 
     // ── Themes ────────────────────────────────────────────────────
     const THEMES = {
       dusk: {
+        bgColor: '#130d0a',
         cubeBottom: 0xbe7858, cubeTop: 0xf2e2d8,
-        keyColor: 0xffdcc8, keyI: 2.4,
-        sideColor: 0xc8d8ff, sideI: 2.0,
-        fillColor: 0xff5040, fillI: 60,
-        ambColor: 0xffecd8,  ambI: 0.3,
+        keyColor: 0xffdcc8, keyI: 1.6,
+        sideColor: 0xc8d8ff, sideI: 1.4,
+        fillColor: 0xff5040, fillI: 40,
+        ambColor: 0xffecd8,  ambI: 0.4,
       },
       tide: {
+        bgColor: '#090e15',
         cubeBottom: 0x3a6888, cubeTop: 0xc8dce8,
-        keyColor: 0xc8e0ff, keyI: 2.6,
-        sideColor: 0xffd8c0, sideI: 1.8,
-        fillColor: 0x2060c0, fillI: 70,
-        ambColor: 0xd0e8f8,  ambI: 0.35,
+        keyColor: 0xc8e0ff, keyI: 1.8,
+        sideColor: 0xffd8c0, sideI: 1.2,
+        fillColor: 0x2060c0, fillI: 48,
+        ambColor: 0xd0e8f8,  ambI: 0.4,
       },
       moss: {
+        bgColor: '#090d0a',
         cubeBottom: 0x4a7858, cubeTop: 0xc8e0d0,
-        keyColor: 0xd0ffe0, keyI: 2.2,
-        sideColor: 0xffd8c0, sideI: 1.8,
-        fillColor: 0x30b060, fillI: 55,
-        ambColor: 0xd0f8e0,  ambI: 0.3,
+        keyColor: 0xd0ffe0, keyI: 1.5,
+        sideColor: 0xffd8c0, sideI: 1.2,
+        fillColor: 0x30b060, fillI: 38,
+        ambColor: 0xd0f8e0,  ambI: 0.4,
       },
       void: {
+        bgColor: '#0d0d0d',
         cubeBottom: 0x383838, cubeTop: 0xd8d8d8,
-        keyColor: 0xffffff, keyI: 2.2,
-        sideColor: 0xdde0ff, sideI: 1.6,
-        fillColor: 0x888888, fillI: 50,
-        ambColor: 0xffffff,  ambI: 0.25,
+        keyColor: 0xffffff, keyI: 1.5,
+        sideColor: 0xdde0ff, sideI: 1.1,
+        fillColor: 0x888888, fillI: 35,
+        ambColor: 0xffffff,  ambI: 0.35,
       },
     };
 
@@ -650,9 +664,13 @@
       });
     }
 
+    const themeColorMeta = document.getElementById('theme-color-meta');
+
     function setTheme(name) {
       currentTheme = name;
-      document.body.className = 'theme-' + name;
+      document.body.classList.remove('theme-dusk', 'theme-tide', 'theme-moss', 'theme-void');
+      document.body.classList.add('theme-' + name);
+      themeColorMeta.setAttribute('content', THEMES[name].bgColor);
       applyThemeLights(name);
       updateCubeMaterials();
       localStorage.setItem('vheda-theme', name);
@@ -662,22 +680,22 @@
     }
 
     // ── Shared geometry ───────────────────────────────────────────
-    const STEP  = 1.0;
+    const STEP  = 1.35;
     const CSIZE = 0.82;
     const geo   = new RoundedBoxGeometry(CSIZE, CSIZE, CSIZE, 3, 0.17);
 
     // ── Dynamic cube state ────────────────────────────────────────
     const cubeRoot = new THREE.Object3D();
     scene.add(cubeRoot);
-    let cubelets = [], MOVES = [], GRID = 0, activeMats = [];
+    let cubelets = [], MOVES = [], GRID = 0, activeMats = [], baseScales = [];
 
     function getN() {
       const w = innerWidth;
-      if (w >= 1400) return 5;
-      if (w >= 900)  return 4;
-      if (w >= 600)  return 3;
-      if (w >= 380)  return 2;
-      return 1;
+      if (w >= 1200) return 7;
+      if (w >= 900)  return 6;
+      if (w >= 600)  return 4;
+      if (w >= 380)  return 3;
+      return 2;
     }
 
     function makeGradientMats(N) {
@@ -688,7 +706,7 @@
         const pct = N === 1 ? 0.5 : i / (N - 1);
         return new THREE.MeshStandardMaterial({
           color: new THREE.Color().lerpColors(b, t, pct),
-          metalness: 0.06, roughness: 0.06, envMapIntensity: 1.8,
+          metalness: 0.04, roughness: 0.22, envMapIntensity: 1.0,
         });
       });
     }
@@ -697,6 +715,21 @@
       const half = (GRID - 1) / 2;
       const idx  = Math.round(pos / STEP + half);
       return (Math.max(0, Math.min(GRID - 1, idx)) - half) * STEP;
+    }
+
+    // Spherical shape:
+    //  – inner zone  (dist ≤ half)        : full size   — face-centers always solid
+    //  – transition  (half → half * 1.25) : smooth falloff
+    //  – outer       (dist ≥ half * 1.25) : scale = 0   — hard cutoff, zero debris
+    function computeSphericalScale(pos) {
+      if (GRID <= 2) return 1.0;
+      const half  = (GRID - 1) * 0.5 * STEP;
+      const outer = half * 1.25;
+      const dist  = pos.length();
+      if (dist >= outer) return 0;
+      if (dist <= half)  return 1;
+      const t = (dist - half) / (outer - half); // 0→1 across the band
+      return 1 - t * t;
     }
 
     // ── Face-turn state — declared before buildCube ───────────────
@@ -711,7 +744,7 @@
         scene.remove(anim.pivot);
         anim = null;
       }
-      cubelets.forEach(c => cubeRoot.remove(c));
+      cubeRoot.clear();
       cubelets = [];
       activeMats.forEach(m => m.dispose());
       activeMats = makeGradientMats(N);
@@ -721,20 +754,25 @@
         for (let yi = 0; yi < N; yi++)
           for (let zi = 0; zi < N; zi++) {
             const mesh = new THREE.Mesh(geo, activeMats[yi]);
+            mesh._idx = cubelets.length;
             mesh.position.set((xi-half)*STEP, (yi-half)*STEP, (zi-half)*STEP);
             cubeRoot.add(mesh); cubelets.push(mesh);
           }
+      baseScales = cubelets.map(c => computeSphericalScale(c.position));
+      cubelets.forEach(c => c.scale.setScalar(baseScales[c._idx]));
       const layers = Array.from({ length: N }, (_, i) => (i - half) * STEP);
       MOVES = [];
       ['x','y','z'].forEach(axis => layers.forEach(layer =>
         [Math.PI/2, -Math.PI/2].forEach(angle => MOVES.push({ axis, layer, angle }))
       ));
-      CAM_R = Math.max(4, N * 3.4);
+      CAM_R = Math.max(4, N * STEP * 3.4);
       waitTimer = TURN_GAP;
     }
 
     // Apply saved theme, then build
-    document.body.className = 'theme-' + currentTheme;
+    document.body.classList.remove('theme-dusk', 'theme-tide', 'theme-moss', 'theme-void');
+    document.body.classList.add('theme-' + currentTheme);
+    themeColorMeta.setAttribute('content', THEMES[currentTheme].bgColor);
     applyThemeLights(currentTheme);
     document.querySelectorAll('.theme-dot').forEach(d =>
       d.classList.toggle('active', d.dataset.theme === currentTheme)
@@ -771,6 +809,7 @@
           c.position.x = snapPos(c.position.x);
           c.position.y = snapPos(c.position.y);
           c.position.z = snapPos(c.position.z);
+          baseScales[c._idx] = computeSphericalScale(c.position);
         });
         scene.remove(anim.pivot);
         anim = null;
@@ -793,7 +832,7 @@
     window.addEventListener('mousemove',  e => onMove(e.clientX, e.clientY));
     window.addEventListener('mouseup',    onUp);
     canvas.addEventListener('touchstart', e => onDown(e.touches[0].clientX, e.touches[0].clientY), { passive:true });
-    window.addEventListener('touchmove',  e => onMove(e.touches[0].clientX, e.touches[0].clientY), { passive:true });
+    window.addEventListener('touchmove',  e => { if (e.touches.length) onMove(e.touches[0].clientX, e.touches[0].clientY); }, { passive:true });
     window.addEventListener('touchend',   onUp);
 
     window.addEventListener('resize', () => {
@@ -820,12 +859,14 @@
       projPanel.classList.add('open');
       projBtn.classList.add('open');
       projBtn.textContent = '✕';
+      projBtn.setAttribute('aria-label', 'Close projects');
     };
     const closeDrawer = () => {
       panelOpen = false;
       projPanel.classList.remove('open');
       projBtn.classList.remove('open');
       projBtn.textContent = 'PROJECTS ↑';
+      projBtn.setAttribute('aria-label', 'Open projects');
     };
 
     projBtn.addEventListener('click', () => panelOpen ? closeDrawer() : openDrawer());
@@ -834,20 +875,6 @@
       if (!projPanel.contains(e.target)) closeDrawer();
     }, { passive: true });
 
-    // ── Googly eye ────────────────────────────────────────────────
-    const googlyEye   = document.querySelector('.googly-eye');
-    const googlyPupil = googlyEye && googlyEye.querySelector('.googly-pupil');
-    if (googlyEye && googlyPupil) {
-      window.addEventListener('mousemove', e => {
-        const rect = googlyEye.getBoundingClientRect();
-        const cx = rect.left + rect.width  / 2;
-        const cy = rect.top  + rect.height / 2;
-        const dx = e.clientX - cx, dy = e.clientY - cy;
-        const a  = Math.atan2(dy, dx);
-        const d  = Math.min(5, Math.sqrt(dx*dx + dy*dy));
-        googlyPupil.style.transform = `translate(calc(-50% + ${(Math.cos(a)*d).toFixed(2)}px), calc(-50% + ${(Math.sin(a)*d).toFixed(2)}px))`;
-      });
-    }
 
     // ── Theme switching ───────────────────────────────────────────
     document.querySelectorAll('.theme-dot').forEach(dot => {
@@ -885,6 +912,7 @@
     setInterval(updateClock, 1000);
 
     // ── Render loop ───────────────────────────────────────────────
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const clock = new THREE.Clock();
     (function render() {
       requestAnimationFrame(render);
@@ -893,8 +921,19 @@
       if (!dragging && (now - lastDrag) / 1000 > 2.5) theta += dt * 0.25;
       cubeRoot.position.y = Math.sin(now * 0.0007) * 0.18;
       positionCamera();
-      if (anim) tickTurn(dt);
-      else { waitTimer -= dt; if (waitTimer <= 0) startTurn(); }
+      if (!prefersReducedMotion) {
+        if (anim) tickTurn(dt);
+        else { waitTimer -= dt; if (waitTimer <= 0) startTurn(); }
+        // Breathing wave: scale ripples outward from center
+        const breatheT = now * 0.0013;
+        cubelets.forEach(c => {
+          const s = baseScales[c._idx];
+          if (s < 0.01) { c.scale.setScalar(0); return; } // keep invisible corners hidden
+          const dist = c.position.length();
+          const wave = 1 + 0.22 * Math.sin(breatheT + dist * 2.5);
+          c.scale.setScalar(s * wave);
+        });
+      }
       renderer.render(scene, camera);
     })();
 
