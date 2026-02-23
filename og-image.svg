@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <radialGradient id="bg-gradient" cx="50%" cy="50%" r="55%" fx="50%" fy="50%">
+      <stop offset="0%"   stop-color="#1e1510" />
+      <stop offset="100%" stop-color="#130d0a" />
+    </radialGradient>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&amp;family=Space+Mono&amp;display=swap');
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg-gradient)" />
+
+  <!-- Name row: "V" filled + "HEDA" outlined, centered together -->
+  <!-- Combined visual width: "V" ~145px + small gap ~12px + "HEDA" ~4×145px ~580px → total ~737px centered at x=600 -->
+  <text
+    x="385"
+    y="310"
+    font-family="'Space Grotesk', sans-serif"
+    font-weight="700"
+    font-size="220"
+    fill="#d4b09a"
+    dominant-baseline="middle"
+    text-anchor="middle"
+    letter-spacing="-4"
+  >V</text>
+
+  <text
+    x="762"
+    y="310"
+    font-family="'Space Grotesk', sans-serif"
+    font-weight="700"
+    font-size="220"
+    fill="none"
+    stroke="#b8b2aa"
+    stroke-width="3"
+    dominant-baseline="middle"
+    text-anchor="middle"
+    letter-spacing="6"
+  >HEDA</text>
+
+  <!-- Subtitle -->
+  <text
+    x="600"
+    y="405"
+    font-family="'Space Mono', monospace"
+    font-size="36"
+    fill="#787068"
+    dominant-baseline="middle"
+    text-anchor="middle"
+    letter-spacing="6"
+  >Full Stack Engineer</text>
+
+  <!-- Separator: a row of three dots -->
+  <circle cx="591" cy="454" r="2.5" fill="#464038" />
+  <circle cx="600" cy="454" r="2.5" fill="#464038" />
+  <circle cx="609" cy="454" r="2.5" fill="#464038" />
+
+  <!-- URL -->
+  <text
+    x="600"
+    y="500"
+    font-family="'Space Mono', monospace"
+    font-size="26"
+    fill="#585450"
+    dominant-baseline="middle"
+    text-anchor="middle"
+    letter-spacing="4"
+  >vheda.in</text>
+</svg>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1" />
   <title>Vaibhav Heda — Full Stack Engineer</title>
   <meta name="description" content="Vaibhav Heda — Full Stack Engineer based in India. Building Toolkitly, v-core and AI-powered tools. Specialising in realtime 3D, interaction and performance." />
   <meta name="keywords" content="Vaibhav Heda, Full Stack Engineer, UI Engineer, Three.js, React, India, Toolkitly, v-core" />
@@ -13,12 +13,12 @@
   <meta property="og:url"         content="https://vheda.in/" />
   <meta property="og:title"       content="Vaibhav Heda — Full Stack Engineer" />
   <meta property="og:description" content="Full Stack Engineer based in India. Building Toolkitly, v-core and AI-powered tools." />
-  <meta property="og:image"       content="https://vheda.in/og-image.png" />
+  <meta property="og:image"       content="https://vheda.in/og-image.svg" />
   <meta name="twitter:card"        content="summary_large_image" />
   <meta name="twitter:title"       content="Vaibhav Heda — Full Stack Engineer" />
   <meta name="twitter:description" content="Full Stack Engineer based in India. Building Toolkitly, v-core and AI-powered tools." />
-  <meta name="twitter:image"       content="https://vheda.in/og-image.png" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://esm.sh; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://esm.sh; frame-ancestors 'none';" />
+  <meta name="twitter:image"       content="https://vheda.in/og-image.svg" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://esm.sh; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://esm.sh;" />
   <meta http-equiv="X-Content-Type-Options" content="nosniff" />
   <meta name="referrer" content="strict-origin-when-cross-origin" />
   <meta name="theme-color" content="#130d0a" id="theme-color-meta" />
@@ -296,7 +296,11 @@
       line-height: 1;
       transition: color 0.6s;
     }
-    .clock-colon { line-height: 1; padding: 0 0.02em; }
+    .clock-colon { line-height: 1; padding: 0 0.02em; animation: colon-pulse 2s step-start infinite; }
+    @keyframes colon-pulse {
+      0%, 49% { opacity: 1; }
+      50%, 100% { opacity: 0.15; }
+    }
     .digit {
       position: relative;
       overflow: hidden;
@@ -423,6 +427,51 @@
     .links a:hover::before { transform: translateY(0); }
     .links a span { position: relative; z-index: 1; }
 
+    .links button {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--fg-dim);
+      text-decoration: none;
+      letter-spacing: 0.06em;
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.52rem 1.25rem;
+      border: 1.5px dashed var(--fg-muted);
+      border-radius: 999px;
+      overflow: hidden;
+      background: transparent;
+      cursor: pointer;
+      transition: color 0.45s cubic-bezier(0,0.55,0.45,1),
+                  border-color 0.45s cubic-bezier(0,0.55,0.45,1);
+    }
+    .links button::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--fill);
+      transform: translateY(105%);
+      transition: transform 0.5s cubic-bezier(0,0.55,0.45,1);
+    }
+    .links button:hover { color: var(--fill-text); border-color: var(--fill); }
+    .links button:hover::before { transform: translateY(0); }
+    .links button span { position: relative; z-index: 1; }
+
+    /* ── Doc Bot SOON badge ───────────────────────────────────────── */
+    .soon-badge {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.38rem;
+      letter-spacing: 0.08em;
+      color: var(--fg-muted);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0.18rem 0.45rem;
+      position: absolute;
+      top: 0.35rem;
+      right: 0.45rem;
+      z-index: 1;
+    }
 
     /* ── Drag hint overlay — full screen, auto-fades ─────────────── */
     #drag-hint {
@@ -442,10 +491,11 @@
     @media (prefers-reduced-motion: reduce) {
       @keyframes d-out { from { opacity: 1; } to { opacity: 0; } }
       @keyframes d-in  { from { opacity: 0; } to { opacity: 1; } }
-      .project-card, .links a, .project-card::before, .links a::before {
+      .project-card, .links a, .links button, .project-card::before, .links a::before, .links button::before {
         transition-duration: 0.01ms !important;
       }
       .dot.active { animation: none; }
+      .clock-colon { animation: none; }
     }
     #drag-hint span {
       font-family: 'Space Mono', monospace;
@@ -491,6 +541,7 @@
       <div class="p-info"><div class="p-name">v-core</div><div class="p-domain">.cloud</div></div>
     </a>
     <div class="project-card" style="--delay:0.34s">
+      <span class="soon-badge">SOON</span>
       <div class="p-icon">
         <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
           <rect x="3.5" y="7.5" width="13" height="10" rx="1.5"/>
@@ -503,7 +554,7 @@
       <div class="p-info"><div class="p-name">Doc Bot</div><div class="p-domain">AI assistant</div></div>
     </div>
   </div>
-  <button id="proj-btn">PROJECTS ↑</button>
+  <button id="proj-btn">PROJECTS</button>
 
   <div class="bottom-left">
     <div class="local-time-label">LOCAL TIME (UTC+5:30)</div>
@@ -536,7 +587,7 @@
   <nav class="links">
     <a href="https://github.com/vaibhavheda" target="_blank" rel="noopener noreferrer"><span>Github</span></a>
     <a href="https://www.linkedin.com/in/vaibhav-heda/" target="_blank" rel="noopener noreferrer"><span>LinkedIn</span></a>
-    <a href="mailto:Vaibhav.heda799@gmail.com"><span>Email</span></a>
+    <button id="email-btn" type="button" aria-label="Send email"><span>Email</span></button>
   </nav>
 
   <div id="drag-hint"><span>drag to rotate</span></div>
@@ -544,6 +595,9 @@
   <script type="module">
     import * as THREE from 'https://esm.sh/three@0.165.0';
     import { RoundedBoxGeometry } from 'https://esm.sh/three@0.165.0/examples/jsm/geometries/RoundedBoxGeometry';
+    import { EffectComposer } from 'https://esm.sh/three@0.165.0/examples/jsm/postprocessing/EffectComposer';
+    import { RenderPass }     from 'https://esm.sh/three@0.165.0/examples/jsm/postprocessing/RenderPass';
+    import { UnrealBloomPass } from 'https://esm.sh/three@0.165.0/examples/jsm/postprocessing/UnrealBloomPass';
 
     // ── Renderer ──────────────────────────────────────────────────
     const canvas = document.getElementById('c');
@@ -574,6 +628,31 @@
       camera.lookAt(0, 0, 0);
     }
     positionCamera();
+
+    // ── Post-processing: bloom ────────────────────────────────────
+    const dpr = renderer.getPixelRatio();
+    const composerTarget = new THREE.WebGLRenderTarget(
+      innerWidth * dpr, innerHeight * dpr,
+      { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter,
+        format: THREE.RGBAFormat, colorSpace: THREE.SRGBColorSpace }
+    );
+    const composer = new EffectComposer(renderer, composerTarget);
+    composer.addPass(new RenderPass(scene, camera));
+    const bloomPass = new UnrealBloomPass(
+      new THREE.Vector2(innerWidth * dpr, innerHeight * dpr),
+      0.45,   // strength
+      0.5,    // radius
+      0.82    // threshold
+    );
+    composer.addPass(bloomPass);
+
+    // ── Cursor proximity distortion ───────────────────────────────
+    const hasHover    = window.matchMedia('(hover: hover)').matches;
+    const raycaster   = new THREE.Raycaster();
+    const mouseNDC    = { x: 999, y: 999 };
+    const hitPoint    = new THREE.Vector3();
+    const tmpVec      = new THREE.Vector3();
+    const sphereBound = new THREE.Sphere(new THREE.Vector3(0, 0, 0), 1); // radius updated in buildCube
 
     // ── Environment map ───────────────────────────────────────────
     const pmrem = new THREE.PMREMGenerator(renderer);
@@ -608,6 +687,9 @@
     const sideL = new THREE.DirectionalLight(0xc8d8ff, 1.4); sideL.position.set(9,1,4);  scene.add(sideL);
     const fillL = new THREE.PointLight(0xff5040, 40, 24);    fillL.position.set(0,6,2);  scene.add(fillL);
     const ambL  = new THREE.AmbientLight(0xffecd8, 0.4);     scene.add(ambL);
+
+    // ── Bloom strength per theme ──────────────────────────────────
+    const BLOOM_STRENGTH = { dusk: 0.45, tide: 0.55, moss: 0.40, void: 0.30 };
 
     // ── Themes ────────────────────────────────────────────────────
     const THEMES = {
@@ -677,22 +759,23 @@
       document.querySelectorAll('.theme-dot').forEach(d =>
         d.classList.toggle('active', d.dataset.theme === name)
       );
+      bloomPass.strength = BLOOM_STRENGTH[name] ?? 0.45;
     }
 
     // ── Shared geometry ───────────────────────────────────────────
     const STEP  = 1.35;
+    const influenceR = 2.5 * STEP; // proximity effect radius (declared here, after STEP)
     const CSIZE = 0.82;
     const geo   = new RoundedBoxGeometry(CSIZE, CSIZE, CSIZE, 3, 0.17);
 
     // ── Dynamic cube state ────────────────────────────────────────
     const cubeRoot = new THREE.Object3D();
     scene.add(cubeRoot);
-    let cubelets = [], MOVES = [], GRID = 0, activeMats = [], baseScales = [];
+    let cubelets = [], MOVES = [], GRID = 0, activeMats = [], baseScales = [], phaseOffsets = [];
 
     function getN() {
       const w = innerWidth;
-      if (w >= 1200) return 7;
-      if (w >= 900)  return 6;
+      if (w >= 900)  return 5;
       if (w >= 600)  return 4;
       if (w >= 380)  return 3;
       return 2;
@@ -722,14 +805,7 @@
     //  – transition  (half → half * 1.25) : smooth falloff
     //  – outer       (dist ≥ half * 1.25) : scale = 0   — hard cutoff, zero debris
     function computeSphericalScale(pos) {
-      if (GRID <= 2) return 1.0;
-      const half  = (GRID - 1) * 0.5 * STEP;
-      const outer = half * 1.25;
-      const dist  = pos.length();
-      if (dist >= outer) return 0;
-      if (dist <= half)  return 1;
-      const t = (dist - half) / (outer - half); // 0→1 across the band
-      return 1 - t * t;
+      return 1.0;
     }
 
     // ── Face-turn state — declared before buildCube ───────────────
@@ -758,7 +834,8 @@
             mesh.position.set((xi-half)*STEP, (yi-half)*STEP, (zi-half)*STEP);
             cubeRoot.add(mesh); cubelets.push(mesh);
           }
-      baseScales = cubelets.map(c => computeSphericalScale(c.position));
+      baseScales    = cubelets.map(c => computeSphericalScale(c.position));
+      phaseOffsets  = cubelets.map(() => (Math.random() - 0.5) * 1.4);
       cubelets.forEach(c => c.scale.setScalar(baseScales[c._idx]));
       const layers = Array.from({ length: N }, (_, i) => (i - half) * STEP);
       MOVES = [];
@@ -766,6 +843,7 @@
         [Math.PI/2, -Math.PI/2].forEach(angle => MOVES.push({ axis, layer, angle }))
       ));
       CAM_R = Math.max(4, N * STEP * 3.4);
+      sphereBound.radius = GRID * STEP * 0.85;
       waitTimer = TURN_GAP;
     }
 
@@ -774,10 +852,12 @@
     document.body.classList.add('theme-' + currentTheme);
     themeColorMeta.setAttribute('content', THEMES[currentTheme].bgColor);
     applyThemeLights(currentTheme);
+    bloomPass.strength = BLOOM_STRENGTH[currentTheme] ?? 0.45;
     document.querySelectorAll('.theme-dot').forEach(d =>
       d.classList.toggle('active', d.dataset.theme === currentTheme)
     );
     buildCube(getN());
+    let proximityMults = new Float32Array(cubelets.length).fill(1);
 
     // ── Face-turn helpers ─────────────────────────────────────────
     function easeInOut(t) { return (1 - Math.cos(Math.PI * t)) / 2; }
@@ -819,28 +899,103 @@
 
     // ── Drag-to-orbit ─────────────────────────────────────────────
     let dragging = false, prevX = 0, prevY = 0, lastDrag = 0;
-    const onDown = (x,y) => { dragging=true; prevX=x; prevY=y; };
+    // Tap-to-turn state
+    let clickStartX = 0, clickStartY = 0, hasDragged = false;
+    // Pinch-to-zoom state
+    let isPinching = false, pinchStart = 0, pinchCamR = 0;
+
+    function triggerTurn() {
+      if (!anim) { waitTimer = 0; }
+    }
+
+    function pinchDist(touches) {
+      const dx = touches[0].clientX - touches[1].clientX;
+      const dy = touches[0].clientY - touches[1].clientY;
+      return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    const onDown = (x,y) => {
+      dragging=true; prevX=x; prevY=y;
+      clickStartX=x; clickStartY=y; hasDragged=false;
+    };
     const onMove = (x,y) => {
       if (!dragging) return;
+      if (!hasDragged) {
+        const dx = Math.abs(x - clickStartX), dy = Math.abs(y - clickStartY);
+        if (dx + dy >= 4) hasDragged = true;
+      }
       theta -= (x-prevX)*0.006;
       phi    = Math.max(0.22, Math.min(Math.PI-0.22, phi-(y-prevY)*0.006));
       prevX=x; prevY=y; lastDrag=Date.now();
     };
-    const onUp = () => { dragging=false; };
+    const onUp = (isTouchOnCanvas) => {
+      if (dragging && !hasDragged && isTouchOnCanvas) triggerTurn();
+      dragging=false;
+    };
 
     canvas.addEventListener('mousedown',  e => onDown(e.clientX, e.clientY));
     window.addEventListener('mousemove',  e => onMove(e.clientX, e.clientY));
-    window.addEventListener('mouseup',    onUp);
-    canvas.addEventListener('touchstart', e => onDown(e.touches[0].clientX, e.touches[0].clientY), { passive:true });
-    window.addEventListener('touchmove',  e => { if (e.touches.length) onMove(e.touches[0].clientX, e.touches[0].clientY); }, { passive:true });
-    window.addEventListener('touchend',   onUp);
+    window.addEventListener('mouseup',    () => onUp(false));
+
+    // ── Cursor proximity — mouse tracking (desktop only) ─────────
+    if (hasHover) {
+      window.addEventListener('mousemove', e => {
+        mouseNDC.x =  (e.clientX / innerWidth)  * 2 - 1;
+        mouseNDC.y = -(e.clientY / innerHeight) * 2 + 1;
+      });
+      window.addEventListener('mouseleave', () => {
+        mouseNDC.x = 999; mouseNDC.y = 999;
+        proximityMults.fill(1);
+      });
+    }
+    canvas.addEventListener('click',      () => { if (!hasDragged) triggerTurn(); });
+    canvas.addEventListener('touchstart', e => {
+      if (e.touches.length === 2) {
+        // Begin pinch — cancel any ongoing drag
+        isPinching = true;
+        dragging = false;
+        pinchStart = pinchDist(e.touches);
+        pinchCamR  = CAM_R;
+      } else if (!isPinching && e.target === canvas) {
+        onDown(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    }, { passive:true });
+    window.addEventListener('touchmove',  e => {
+      if (isPinching && e.touches.length === 2) {
+        const newDist = pinchDist(e.touches);
+        const ratio   = pinchStart > 0 ? pinchStart / newDist : 1;
+        const minR = GRID * STEP * 1.8;
+        const maxR = GRID * STEP * 6;
+        CAM_R = Math.max(minR, Math.min(maxR, pinchCamR * ratio));
+      } else if (!isPinching && e.touches.length) {
+        onMove(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    }, { passive:true });
+    window.addEventListener('touchend',   e => {
+      if (e.touches.length < 2) {
+        if (isPinching) {
+          isPinching = false;
+        } else {
+          onUp(true);
+        }
+      }
+    });
 
     window.addEventListener('resize', () => {
       renderer.setSize(innerWidth, innerHeight);
+      const dpr = renderer.getPixelRatio();
+      composer.setSize(innerWidth * dpr, innerHeight * dpr);
+      bloomPass.resolution.set(innerWidth * dpr, innerHeight * dpr);
       camera.aspect = innerWidth / innerHeight;
       camera.updateProjectionMatrix();
       const newN = getN();
-      if (newN !== GRID) buildCube(newN);
+      if (newN !== GRID) {
+        buildCube(newN);
+        proximityMults = new Float32Array(cubelets.length).fill(1);
+      } else {
+        proximityMults.fill(1);
+      }
+      if (!panelOpen) projBtn.textContent = getProjArrow();
     });
     // ── Drag hint overlay — auto-fade after 2.5s ─────────────────
     const dragHint = document.getElementById('drag-hint');
@@ -854,18 +1009,25 @@
     const projPanel = document.querySelector('.projects');
     let panelOpen = false;
 
+    function getProjArrow() {
+      return window.innerWidth > 800 ? 'PROJECTS \u2192' : 'PROJECTS \u2191';
+    }
+
+    // Set initial button text based on current viewport
+    projBtn.textContent = getProjArrow();
+
     const openDrawer = () => {
       panelOpen = true;
       projPanel.classList.add('open');
       projBtn.classList.add('open');
-      projBtn.textContent = '✕';
+      projBtn.textContent = '\u2715';
       projBtn.setAttribute('aria-label', 'Close projects');
     };
     const closeDrawer = () => {
       panelOpen = false;
       projPanel.classList.remove('open');
       projBtn.classList.remove('open');
-      projBtn.textContent = 'PROJECTS ↑';
+      projBtn.textContent = getProjArrow();
       projBtn.setAttribute('aria-label', 'Open projects');
     };
 
@@ -875,11 +1037,23 @@
       if (!projPanel.contains(e.target)) closeDrawer();
     }, { passive: true });
 
+    // ── Email obfuscation ─────────────────────────────────────────
+    const emailBtn = document.getElementById('email-btn');
+    emailBtn.addEventListener('click', () => {
+      window.location.href = 'mailto:' + ['Vaibhav.heda799', 'gmail.com'].join('@');
+    });
 
     // ── Theme switching ───────────────────────────────────────────
     document.querySelectorAll('.theme-dot').forEach(dot => {
       dot.addEventListener('click', () => setTheme(dot.dataset.theme));
     });
+
+    // ── Auto theme cycle every 15s ────────────────────────────────
+    const THEME_ORDER = ['dusk', 'tide', 'moss', 'void'];
+    setInterval(() => {
+      const next = THEME_ORDER[(THEME_ORDER.indexOf(currentTheme) + 1) % THEME_ORDER.length];
+      setTheme(next);
+    }, 15000);
 
     // ── Clock ─────────────────────────────────────────────────────
     const digitEls = [0,1,2,3].map(i => document.getElementById('d'+i));
@@ -911,11 +1085,14 @@
     updateClock();
     setInterval(updateClock, 1000);
 
+    // ── Tab visibility pause ──────────────────────────────────────
+    let rafId = null;
+
     // ── Render loop ───────────────────────────────────────────────
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const clock = new THREE.Clock();
-    (function render() {
-      requestAnimationFrame(render);
+    function render() {
+      rafId = requestAnimationFrame(render);
       const dt = Math.min(clock.getDelta(), 0.05);
       const now = Date.now();
       if (!dragging && (now - lastDrag) / 1000 > 2.5) theta += dt * 0.25;
@@ -924,18 +1101,59 @@
       if (!prefersReducedMotion) {
         if (anim) tickTurn(dt);
         else { waitTimer -= dt; if (waitTimer <= 0) startTurn(); }
-        // Breathing wave: scale ripples outward from center
-        const breatheT = now * 0.0013;
+        const breatheT = now * 0.0011;
+        // Update proximity multipliers
+        if (hasHover) {
+          sphereBound.center.copy(cubeRoot.position);   // sync to bobbing position
+          raycaster.setFromCamera(mouseNDC, camera);
+          const hit = raycaster.ray.intersectSphere(sphereBound, hitPoint);
+          if (hit) {
+            cubelets.forEach(c => {
+              const d = c.getWorldPosition(tmpVec).distanceTo(hitPoint);
+              proximityMults[c._idx] = d < influenceR
+                ? 1 + 0.35 * Math.pow(1 - d / influenceR, 2)
+                : 1;
+            });
+          } else {
+            proximityMults.fill(1);
+          }
+        }
+        // Asymmetric wave: 1 row visible, 2 rows shrunken at any moment
+        // Y coefficient ~1.16 = 2π / (4*STEP) → one full cycle across cube height → single scan line
+        const TWO_PI   = Math.PI * 2;
+        const GROW_END = TWO_PI * 0.78;
+        const SHRK_LEN = TWO_PI * 0.22;
         cubelets.forEach(c => {
           const s = baseScales[c._idx];
-          if (s < 0.01) { c.scale.setScalar(0); return; } // keep invisible corners hidden
-          const dist = c.position.length();
-          const wave = 1 + 0.22 * Math.sin(breatheT + dist * 2.5);
-          c.scale.setScalar(s * wave);
+          c.getWorldPosition(tmpVec);
+          const phase = breatheT
+            - tmpVec.y * 1.16          // one full cycle across height → scan line
+            - tmpVec.x * 0.08          // subtle x stagger
+            - tmpVec.z * 0.05          // subtle z stagger
+            + phaseOffsets[c._idx];    // per-cubelet random offset breaks row-sync
+          const np = ((phase % TWO_PI) + TWO_PI) % TWO_PI;
+          let wave, t;
+          if (np < GROW_END) {
+            t = np / GROW_END;
+            wave = t * t;                          // t²: stays dark, sharp concentrated peak
+          } else {
+            t = (np - GROW_END) / SHRK_LEN;
+            wave = 1 - t * t * (3 - 2 * t);       // fast smoothstep shrink
+          }
+          c.scale.setScalar(s * wave * proximityMults[c._idx]);
         });
       }
-      renderer.render(scene, camera);
-    })();
+      composer.render();
+    }
+    render();
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        if (rafId !== null) { cancelAnimationFrame(rafId); rafId = null; }
+      } else {
+        if (rafId === null) { clock.getDelta(); render(); } // discard stale dt on resume
+      }
+    });
 
   </script>
 </body>
