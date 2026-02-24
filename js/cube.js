@@ -27,8 +27,7 @@ let proximityMults = new Float32Array(0);
 
 export function resetProximityMults() { proximityMults.fill(1); }
 
-export function getN() {
-  const w = innerWidth;
+export function getN(w) {
   if (w >= 900) return 5;
   if (w >= 600) return 4;
   if (w >= 380) return 3;
