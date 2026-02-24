@@ -55,7 +55,6 @@ export function initScene(canvas, width, height, dpr) {
 
   // Environment map
   const pmrem = new THREE.PMREMGenerator(renderer);
-  pmrem.compileEquirectangularShader();
   const envScene  = new THREE.Scene();
   const envSphere = new THREE.Mesh(
     new THREE.SphereGeometry(10, 16, 16),
