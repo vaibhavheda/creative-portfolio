@@ -39,7 +39,10 @@ export const THEMES = {
 
 export const BLOOM_STRENGTH = { dusk: 0.45, tide: 0.55, moss: 0.40, void: 0.30 };
 
-let currentTheme = localStorage.getItem('vheda-theme') || 'dusk';
+const isWorker = typeof document === 'undefined';
+
+// On worker: initialized by initTheme(name). On main thread: read from localStorage.
+let currentTheme = isWorker ? 'dusk' : (localStorage.getItem('vheda-theme') || 'dusk');
 export function getCurrentTheme() { return currentTheme; }
 
 const THEME_TRANS_DUR = 1.4;
@@ -105,21 +108,24 @@ export function tickThemeTransition(dt) {
   if (themeTransition.t >= 1) themeTransition = null;
 }
 
-export function initTheme() {
+// themeName: provided by worker (from init message); ignored on main thread (uses localStorage)
+export function initTheme(themeName) {
+  if (themeName) currentTheme = themeName;
   const th = THEMES[currentTheme];
-  document.body.classList.remove('theme-dusk', 'theme-tide', 'theme-moss', 'theme-void');
-  document.body.classList.add('theme-' + currentTheme);
-  document.getElementById('theme-color-meta').setAttribute('content', th.bgColor);
-  // Apply lights/bloom only — cube not built yet, so skip matColors
   keyL.color.set(th.keyColor);   keyL.intensity  = th.keyI;
   sideL.color.set(th.sideColor); sideL.intensity = th.sideI;
   fillL.color.set(th.fillColor); fillL.intensity = th.fillI;
   ambL.color.set(th.ambColor);   ambL.intensity  = th.ambI;
   bloomPass.strength = BLOOM_STRENGTH[currentTheme] ?? 0.45;
   scene.fog.color.set(th.bgColor);
-  document.querySelectorAll('.theme-dot').forEach(d =>
-    d.classList.toggle('active', d.dataset.theme === currentTheme)
-  );
+  if (!isWorker) {
+    document.body.classList.remove('theme-dusk', 'theme-tide', 'theme-moss', 'theme-void');
+    document.body.classList.add('theme-' + currentTheme);
+    document.getElementById('theme-color-meta').setAttribute('content', th.bgColor);
+    document.querySelectorAll('.theme-dot').forEach(d =>
+      d.classList.toggle('active', d.dataset.theme === currentTheme)
+    );
+  }
 }
 
 export function setTheme(name) {
@@ -128,11 +134,13 @@ export function setTheme(name) {
   const to   = buildThemeTarget(name);
   themeTransition = { from, to, t: 0 };
   currentTheme = name;
-  document.body.classList.remove('theme-dusk', 'theme-tide', 'theme-moss', 'theme-void');
-  document.body.classList.add('theme-' + name);
-  document.getElementById('theme-color-meta').setAttribute('content', THEMES[name].bgColor);
-  localStorage.setItem('vheda-theme', name);
-  document.querySelectorAll('.theme-dot').forEach(d =>
-    d.classList.toggle('active', d.dataset.theme === name)
-  );
+  if (!isWorker) {
+    document.body.classList.remove('theme-dusk', 'theme-tide', 'theme-moss', 'theme-void');
+    document.body.classList.add('theme-' + name);
+    document.getElementById('theme-color-meta').setAttribute('content', THEMES[name].bgColor);
+    localStorage.setItem('vheda-theme', name);
+    document.querySelectorAll('.theme-dot').forEach(d =>
+      d.classList.toggle('active', d.dataset.theme === name)
+    );
+  }
 }
