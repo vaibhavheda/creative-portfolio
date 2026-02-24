@@ -3,29 +3,8 @@ import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass }     from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 
-const canvas = document.getElementById('c');
-
-export const renderer = new THREE.WebGLRenderer({
-  canvas, antialias: true, alpha: true,
-  powerPreference: 'high-performance',
-});
-renderer.setClearColor(0x000000, 0);
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-renderer.toneMapping         = THREE.LinearToneMapping;
-renderer.toneMappingExposure = 1.0;
-renderer.outputColorSpace    = THREE.SRGBColorSpace;
-renderer.setSize(innerWidth, innerHeight);
-
-export const scene = new THREE.Scene();
-scene.fog = new THREE.FogExp2(0x130d0a, 0.028);
-
-export const camera = new THREE.PerspectiveCamera(36, innerWidth / innerHeight, 0.1, 100);
-
-export const cubeRoot = new THREE.Object3D();
-scene.add(cubeRoot);
-
-// Mutable camera radius — written by cube.js (buildCube) and interactions.js (pinch)
-export const cameraState = { r: 12 };
+export let renderer, scene, camera, cubeRoot, cameraState, composer, bloomPass;
+export let keyL, sideL, fillL, ambL;
 
 export function positionCamera(theta, phi) {
   const r = cameraState.r;
@@ -37,23 +16,44 @@ export function positionCamera(theta, phi) {
   camera.lookAt(0, 0, 0);
 }
 
-// ── Post-processing ───────────────────────────────────────────
-const dpr = renderer.getPixelRatio();
-const composerTarget = new THREE.WebGLRenderTarget(
-  innerWidth * dpr, innerHeight * dpr,
-  { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter,
-    format: THREE.RGBAFormat, colorSpace: THREE.SRGBColorSpace }
-);
-export const composer = new EffectComposer(renderer, composerTarget);
-composer.addPass(new RenderPass(scene, camera));
-export const bloomPass = new UnrealBloomPass(
-  new THREE.Vector2(innerWidth * dpr, innerHeight * dpr),
-  0.45, 0.5, 0.82
-);
-composer.addPass(bloomPass);
+export function initScene(canvas, width, height, dpr) {
+  renderer = new THREE.WebGLRenderer({
+    canvas, antialias: true, alpha: true,
+    powerPreference: 'high-performance',
+  });
+  renderer.setClearColor(0x000000, 0);
+  renderer.setPixelRatio(Math.min(dpr, 2));
+  renderer.toneMapping         = THREE.LinearToneMapping;
+  renderer.toneMappingExposure = 1.0;
+  renderer.outputColorSpace    = THREE.SRGBColorSpace;
+  renderer.setSize(width, height, false);
 
-// ── Environment map (internal) ────────────────────────────────
-(function buildEnv() {
+  scene = new THREE.Scene();
+  scene.fog = new THREE.FogExp2(0x130d0a, 0.028);
+
+  camera = new THREE.PerspectiveCamera(36, width / height, 0.1, 100);
+
+  cubeRoot = new THREE.Object3D();
+  scene.add(cubeRoot);
+
+  cameraState = { r: 12 };
+
+  // Post-processing
+  const pDpr = renderer.getPixelRatio();
+  const composerTarget = new THREE.WebGLRenderTarget(
+    width * pDpr, height * pDpr,
+    { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter,
+      format: THREE.RGBAFormat, colorSpace: THREE.SRGBColorSpace }
+  );
+  composer = new EffectComposer(renderer, composerTarget);
+  composer.addPass(new RenderPass(scene, camera));
+  bloomPass = new UnrealBloomPass(
+    new THREE.Vector2(width * pDpr, height * pDpr),
+    0.45, 0.5, 0.82
+  );
+  composer.addPass(bloomPass);
+
+  // Environment map
   const pmrem = new THREE.PMREMGenerator(renderer);
   pmrem.compileEquirectangularShader();
   const envScene  = new THREE.Scene();
@@ -80,10 +80,10 @@ composer.addPass(bloomPass);
   scene.environment = envMap;
   scene.environmentIntensity = 1.0;
   pmrem.dispose();
-})();
 
-// ── Lights ────────────────────────────────────────────────────
-export const keyL  = new THREE.DirectionalLight(0xffdcc8, 1.6); keyL.position.set(-4,-9,5); scene.add(keyL);
-export const sideL = new THREE.DirectionalLight(0xc8d8ff, 1.4); sideL.position.set(9,1,4);  scene.add(sideL);
-export const fillL = new THREE.PointLight(0xff5040, 40, 24);    fillL.position.set(0,6,2);  scene.add(fillL);
-export const ambL  = new THREE.AmbientLight(0xffecd8, 0.4);     scene.add(ambL);
+  // Lights
+  keyL  = new THREE.DirectionalLight(0xffdcc8, 1.6); keyL.position.set(-4,-9,5);  scene.add(keyL);
+  sideL = new THREE.DirectionalLight(0xc8d8ff, 1.4); sideL.position.set(9,1,4);   scene.add(sideL);
+  fillL = new THREE.PointLight(0xff5040, 40, 24);    fillL.position.set(0,6,2);   scene.add(fillL);
+  ambL  = new THREE.AmbientLight(0xffecd8, 0.4);     scene.add(ambL);
+}
