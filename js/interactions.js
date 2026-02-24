@@ -1,10 +1,9 @@
 import { renderer, camera, composer, bloomPass, cameraState } from './scene.js';
 import { buildCube, getN, getGrid, turnState, STEP, resetProximityMults } from './cube.js';
 import { THEMES, getCurrentTheme } from './theme.js';
+import { orbit, mouseNDC, setHasHover } from './state.js';
 
-export const hasHover = window.matchMedia('(hover: hover)').matches;
-export const mouseNDC = { x: 999, y: 999 };
-export const orbit    = { theta: 0.72, phi: 1.12, dragging: false, lastDrag: 0 };
+const hasHover = window.matchMedia('(hover: hover)').matches;
 
 let prevX = 0, prevY = 0;
 let clickStartX = 0, clickStartY = 0, hasDragged = false;
@@ -42,6 +41,7 @@ const onUp = (isTouchOnCanvas) => {
 };
 
 export function init(canvas) {
+  setHasHover(hasHover);
   canvas.addEventListener('mousedown',  e => onDown(e.clientX, e.clientY));
   window.addEventListener('mousemove',  e => onMove(e.clientX, e.clientY));
   window.addEventListener('mouseup',    () => onUp(false));
@@ -99,7 +99,7 @@ export function init(canvas) {
     bloomPass.resolution.set(innerWidth * dpr, innerHeight * dpr);
     camera.aspect = innerWidth / innerHeight;
     camera.updateProjectionMatrix();
-    const newN = getN();
+    const newN = getN(innerWidth);
     const th   = THEMES[getCurrentTheme()];
     if (newN !== getGrid()) {
       buildCube(newN, th.cubeBottom, th.cubeTop);
