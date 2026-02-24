@@ -1,6 +1,6 @@
 import { init } from './main.js';
 import { orbit, mouseNDC } from './state.js';
-import { buildCube, getN, getGrid, turnState, STEP } from './cube.js';
+import { buildCube, getGrid, turnState, STEP } from './cube.js';
 import { THEMES, getCurrentTheme, setTheme } from './theme.js';
 import { cameraState, renderer, camera, composer, bloomPass } from './scene.js';
 

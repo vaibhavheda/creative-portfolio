@@ -76,13 +76,12 @@ export function init(worker, canvas) {
   window.addEventListener('mousemove', e => onMove(e.clientX, e.clientY));
   window.addEventListener('mouseup',   () => onUp(false));
 
-  // Desktop click → cube turn
-  canvas.addEventListener('click', () => {
-    if (!hasDragged) worker.postMessage({ type: 'tap' });
-  });
-
   const hasHoverMedia = window.matchMedia('(hover: hover)').matches;
+  // Desktop click → cube turn (touch handles tap via onUp to avoid double-firing)
   if (hasHoverMedia) {
+    canvas.addEventListener('click', () => {
+      if (!hasDragged) worker.postMessage({ type: 'tap' });
+    });
     window.addEventListener('mousemove', e => {
       worker.postMessage({ type: 'mouseNDC',
         x:  (e.clientX / innerWidth)  * 2 - 1,
