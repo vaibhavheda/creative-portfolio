@@ -1,4 +1,4 @@
-import * as THREE from 'https://esm.sh/three@0.165.0';
+import * as THREE from 'three';
 import { scene, keyL, sideL, fillL, ambL, bloomPass } from './scene.js';
 import { getActiveMats, getGrid } from './cube.js';
 

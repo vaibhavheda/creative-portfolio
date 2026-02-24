@@ -1,7 +1,7 @@
-import * as THREE from 'https://esm.sh/three@0.165.0';
-import { EffectComposer } from 'https://esm.sh/three@0.165.0/examples/jsm/postprocessing/EffectComposer';
-import { RenderPass }     from 'https://esm.sh/three@0.165.0/examples/jsm/postprocessing/RenderPass';
-import { UnrealBloomPass } from 'https://esm.sh/three@0.165.0/examples/jsm/postprocessing/UnrealBloomPass';
+import * as THREE from 'three';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass }     from 'three/examples/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 
 const canvas = document.getElementById('c');
 

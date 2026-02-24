@@ -1,4 +1,4 @@
-import * as THREE from 'https://esm.sh/three@0.165.0';
+import * as THREE from 'three';
 import { composer, cubeRoot, positionCamera } from './scene.js';
 import { buildCube, getN, turnState, startTurn, tickTurn, tickAnimation } from './cube.js';
 import { THEMES, getCurrentTheme, initTheme, setTheme, tickThemeTransition } from './theme.js';

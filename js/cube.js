@@ -1,5 +1,5 @@
-import * as THREE from 'https://esm.sh/three@0.165.0';
-import { RoundedBoxGeometry } from 'https://esm.sh/three@0.165.0/examples/jsm/geometries/RoundedBoxGeometry';
+import * as THREE from 'three';
+import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
 import { scene, cubeRoot, camera, cameraState } from './scene.js';
 
 export const STEP       = 1.35;
