@@ -1,0 +1,5 @@
+# https://vheda.in/robots.txt
+User-agent: *
+Allow: /
+
+Sitemap: https://vheda.in/sitemap.xml
