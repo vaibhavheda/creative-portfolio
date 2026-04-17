@@ -240,9 +240,9 @@
   }
 
   .nb-doodle {
-    --cube: clamp(140px, 14vw, 240px);
+    --cube: clamp(140px, 12vw, 220px);
     position: absolute;
-    top: 16%;
+    top: 26%;
     right: clamp(80px, 16vw, 380px);
     width: calc(var(--cube) * 1.6);
     height: calc(var(--cube) * 1.7);
@@ -252,11 +252,17 @@
     touch-action: none;
   }
   .nb-doodle .cube-wrap { position: absolute; inset: 0; perspective: calc(var(--cube) * 7); }
+  @property --breathe {
+    syntax: '<number>';
+    inherits: true;
+    initial-value: 1;
+  }
   .nb-cube {
     --gap: clamp(2px, 0.4vw, 5px);
     --cubelet: calc((var(--cube) - 2 * var(--gap)) / 3);
     --step: calc(var(--cubelet) + var(--gap));
     --half: calc(var(--cubelet) / 2);
+    --breathe: 1;
     position: absolute;
     top: 40%; left: 50%;
     width: var(--cube); height: var(--cube);
@@ -266,6 +272,13 @@
     will-change: transform;
   }
   .nb-cube.dragging { cursor: grabbing; }
+  .nb-cube.dragging .cubelet { animation-play-state: paused; }
+
+  @keyframes cubelet-breathe {
+    0%, 55%, 100% { --breathe: 1; }
+    72%           { --breathe: 1.12; }
+    88%           { --breathe: 1; }
+  }
 
   .cubelet {
     position: absolute;
@@ -275,10 +288,12 @@
     transform:
       translate3d(-50%, -50%, 0)
       translate3d(
-        calc(var(--ox) * var(--step)),
-        calc(var(--oy) * var(--step)),
-        calc(var(--oz) * var(--step))
+        calc(var(--ox) * var(--step) * var(--breathe)),
+        calc(var(--oy) * var(--step) * var(--breathe)),
+        calc(var(--oz) * var(--step) * var(--breathe))
       );
+    animation: cubelet-breathe 13s cubic-bezier(.4,0,.5,1) infinite both;
+    animation-delay: calc(var(--phase, 0) * -1s);
   }
   .cubelet .face {
     position: absolute; inset: 0;
@@ -796,6 +811,9 @@
           cubelet.style.setProperty('--ox', x);
           cubelet.style.setProperty('--oy', -y);  // CSS Y points down
           cubelet.style.setProperty('--oz', z);
+          // Phase offset: corners breathe ~1.5s after center cubelets → ripple
+          const dist = Math.hypot(x, y, z);
+          cubelet.style.setProperty('--phase', (dist * 0.85).toFixed(2));
           for (const [name, isVisible] of FACES) {
             if (!isVisible(x, y, z)) continue;
             const face = document.createElement('div');
