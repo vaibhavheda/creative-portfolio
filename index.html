@@ -472,6 +472,52 @@
     z-index: 4;
   }
 
+  /* ==== Dark mode + wave reveal ==== */
+  body.is-dark {
+    --paper:    #14161c;
+    --ink:      #ece6d2;
+    --ink-soft: #aaa294;
+    --ink-rgb:    236,230,210;
+    --grid-rgb:   200,200,200;
+  }
+  body.is-dark .tape { background: rgba(180,160,110,0.30); }
+
+  .nb-wave {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 200;
+    background: var(--paper);
+    clip-path: circle(0 at var(--wx, 50vw) var(--wy, 50vh));
+    transition: clip-path 700ms cubic-bezier(.65,0,.35,1);
+    will-change: clip-path;
+  }
+  .nb-wave.go {
+    clip-path: circle(160vmax at var(--wx, 50vw) var(--wy, 50vh));
+  }
+
+  .nb-dark-toggle {
+    appearance: none;
+    background: transparent;
+    border: 1.5px solid rgba(var(--ink-rgb),0.35);
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    margin-left: 8px;
+    padding: 0;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(var(--ink-rgb),0.65);
+    transition: color 0.3s, border-color 0.3s, transform 0.3s;
+  }
+  .nb-dark-toggle:hover { color: var(--accent); border-color: var(--accent); transform: scale(1.1); }
+  .nb-dark-toggle svg { display: block; transition: transform 0.5s; }
+  .nb-dark-toggle .icon-sun  { display: none; }
+  .nb-dark-toggle .icon-moon { display: block; }
+  body.is-dark .nb-dark-toggle .icon-sun  { display: block; }
+  body.is-dark .nb-dark-toggle .icon-moon { display: none; }
+
   /* Theme indicator dots (bottom-center) */
   .nb-themes {
     position: absolute;
@@ -728,12 +774,30 @@
 
   <div class="nb-ver">V·1 · NOTEBOOK · MMXXVI</div>
 
+  <div class="nb-wave" aria-hidden="true"></div>
+
   <div class="nb-themes" role="radiogroup" aria-label="Color theme">
     <span class="nb-themes-label">INK</span>
     <button class="dot on" data-theme="dusk" aria-label="Dusk — blue on cream"></button>
     <button class="dot"    data-theme="tide" aria-label="Tide — teal on cool white"></button>
     <button class="dot"    data-theme="moss" aria-label="Moss — green on sand"></button>
     <button class="dot"    data-theme="void" aria-label="Void — graphite on bone"></button>
+    <button class="nb-dark-toggle" type="button" aria-pressed="false" aria-label="Toggle dark mode" title="Toggle dark mode (D)">
+      <svg class="icon-moon" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/>
+      </svg>
+      <svg class="icon-sun" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="3.5"/>
+        <line x1="12" y1="3" x2="12" y2="5"/>
+        <line x1="12" y1="19" x2="12" y2="21"/>
+        <line x1="3" y1="12" x2="5" y2="12"/>
+        <line x1="19" y1="12" x2="21" y2="12"/>
+        <line x1="5.6" y1="5.6" x2="6.9" y2="6.9"/>
+        <line x1="17.1" y1="17.1" x2="18.4" y2="18.4"/>
+        <line x1="5.6" y1="18.4" x2="6.9" y2="17.1"/>
+        <line x1="17.1" y1="6.9" x2="18.4" y2="5.6"/>
+      </svg>
+    </button>
   </div>
 
 <script>
@@ -879,6 +943,71 @@
     };
     cube.addEventListener('pointerup', release);
     cube.addEventListener('pointercancel', release);
+  })();
+
+  // ===== Dark-mode toggle with wave reveal from cursor =====
+  (function darkWave() {
+    const btn = document.querySelector('.nb-dark-toggle');
+    const wave = document.querySelector('.nb-wave');
+    if (!btn || !wave) return;
+    const body = document.body;
+    const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Track last cursor position so keyboard activations get a sensible wave origin
+    let lastX = window.innerWidth / 2, lastY = window.innerHeight - 30;
+    window.addEventListener('pointermove', (e) => {
+      lastX = e.clientX; lastY = e.clientY;
+    }, { passive: true });
+
+    let busy = false;
+    const toggle = (x, y) => {
+      if (busy) return;
+      const willBeDark = !body.classList.contains('is-dark');
+
+      if (reduce) {
+        body.classList.toggle('is-dark', willBeDark);
+        btn.setAttribute('aria-pressed', String(willBeDark));
+        return;
+      }
+
+      busy = true;
+      body.style.setProperty('--wx', x + 'px');
+      body.style.setProperty('--wy', y + 'px');
+      // Force the wave's background to the destination paper color
+      wave.style.background = willBeDark ? '#14161c' : ({
+        dusk: '#f5efdd', tide: '#e6edf0', moss: '#e5ece2', void: '#e8e8e6'
+      }[[...body.classList].find(c => c.startsWith('theme-'))?.slice(6) || 'dusk']);
+
+      // Trigger expansion
+      void wave.offsetWidth;
+      wave.classList.add('go');
+
+      // Swap underlying state at ~half-way so the unveil reveals the new mode
+      setTimeout(() => {
+        body.classList.toggle('is-dark', willBeDark);
+        btn.setAttribute('aria-pressed', String(willBeDark));
+      }, 350);
+
+      const cleanup = (e) => {
+        if (e && e.propertyName !== 'clip-path') return;
+        wave.removeEventListener('transitionend', cleanup);
+        wave.style.transition = 'none';
+        wave.classList.remove('go');
+        requestAnimationFrame(() => {
+          wave.style.transition = '';
+          busy = false;
+        });
+      };
+      wave.addEventListener('transitionend', cleanup);
+    };
+
+    btn.addEventListener('click', () => toggle(lastX, lastY));
+    window.addEventListener('keydown', (e) => {
+      if ((e.key === 'd' || e.key === 'D') && !e.metaKey && !e.ctrlKey) {
+        if (e.target.matches?.('input, textarea, [contenteditable]')) return;
+        toggle(lastX, lastY);
+      }
+    });
   })();
 </script>
 </body>
