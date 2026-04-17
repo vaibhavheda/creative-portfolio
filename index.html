@@ -253,6 +253,10 @@
   }
   .nb-doodle .cube-wrap { position: absolute; inset: 0; perspective: calc(var(--cube) * 7); }
   .nb-cube {
+    --gap: clamp(2px, 0.4vw, 5px);
+    --cubelet: calc((var(--cube) - 2 * var(--gap)) / 3);
+    --step: calc(var(--cubelet) + var(--gap));
+    --half: calc(var(--cubelet) / 2);
     position: absolute;
     top: 40%; left: 50%;
     width: var(--cube); height: var(--cube);
@@ -262,39 +266,34 @@
     will-change: transform;
   }
   .nb-cube.dragging { cursor: grabbing; }
-  .nb-cube .face {
+
+  .cubelet {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: var(--cubelet); height: var(--cubelet);
+    transform-style: preserve-3d;
+    transform:
+      translate3d(-50%, -50%, 0)
+      translate3d(
+        calc(var(--ox) * var(--step)),
+        calc(var(--oy) * var(--step)),
+        calc(var(--oz) * var(--step))
+      );
+  }
+  .cubelet .face {
     position: absolute; inset: 0;
-    width: var(--cube); height: var(--cube);
-    background: rgba(var(--grid-rgb),0.04);
-    border: 2px solid var(--ink);
+    width: var(--cubelet); height: var(--cubelet);
+    border: 1.4px solid var(--ink);
     border-radius: 2px;
-    box-shadow: inset 0 0 0 1px rgba(var(--ink-rgb),0.1);
-    transition: border-color 1.1s ease, box-shadow 1.1s ease;
+    box-shadow: inset 0 0 0 1px rgba(var(--ink-rgb),0.08);
+    transition: border-color 1.1s ease;
   }
-  .nb-cube .face.f  { transform: translateZ(calc(var(--cube) / 2)); }
-  .nb-cube .face.b  { transform: rotateY(180deg) translateZ(calc(var(--cube) / 2)); }
-  .nb-cube .face.r  { transform: rotateY(90deg)  translateZ(calc(var(--cube) / 2)); }
-  .nb-cube .face.l  { transform: rotateY(-90deg) translateZ(calc(var(--cube) / 2)); }
-  .nb-cube .face.tp { transform: rotateX(90deg)  translateZ(calc(var(--cube) / 2)); background: rgba(var(--grid-rgb),0.08); }
-  .nb-cube .face.bt { transform: rotateX(-90deg) translateZ(calc(var(--cube) / 2)); background: rgba(var(--ink-rgb),0.04); }
-  /* 3x3 Rubik's grid on every face */
-  .nb-cube .face::before {
-    content: '';
-    position: absolute; inset: 0;
-    pointer-events: none;
-    background:
-      linear-gradient(to right,  transparent calc(33.333% - 1px), rgba(var(--ink-rgb),0.7) calc(33.333% - 1px), rgba(var(--ink-rgb),0.7) calc(33.333% + 1px), transparent calc(33.333% + 1px)),
-      linear-gradient(to right,  transparent calc(66.666% - 1px), rgba(var(--ink-rgb),0.7) calc(66.666% - 1px), rgba(var(--ink-rgb),0.7) calc(66.666% + 1px), transparent calc(66.666% + 1px)),
-      linear-gradient(to bottom, transparent calc(33.333% - 1px), rgba(var(--ink-rgb),0.7) calc(33.333% - 1px), rgba(var(--ink-rgb),0.7) calc(33.333% + 1px), transparent calc(33.333% + 1px)),
-      linear-gradient(to bottom, transparent calc(66.666% - 1px), rgba(var(--ink-rgb),0.7) calc(66.666% - 1px), rgba(var(--ink-rgb),0.7) calc(66.666% + 1px), transparent calc(66.666% + 1px));
-  }
-  /* very light per-face wash so each side reads distinctly */
-  .nb-cube .face.f  { background: rgba(255,255,255,0.18); }
-  .nb-cube .face.b  { background: rgba(255,225,120,0.12); }
-  .nb-cube .face.r  { background: rgba(200,70,60,0.10); }
-  .nb-cube .face.l  { background: rgba(220,130,40,0.10); }
-  .nb-cube .face.tp { background: rgba(60,110,180,0.10); }
-  .nb-cube .face.bt { background: rgba(50,140,80,0.10); }
+  .cubelet .face.f  { transform: translateZ(var(--half)); background: rgba(255,255,255,0.30); }
+  .cubelet .face.b  { transform: rotateY(180deg) translateZ(var(--half)); background: rgba(255,225,120,0.22); }
+  .cubelet .face.r  { transform: rotateY(90deg)  translateZ(var(--half)); background: rgba(200,70,60,0.20); }
+  .cubelet .face.l  { transform: rotateY(-90deg) translateZ(var(--half)); background: rgba(220,130,40,0.20); }
+  .cubelet .face.tp { transform: rotateX(90deg)  translateZ(var(--half)); background: rgba(60,110,180,0.20); }
+  .cubelet .face.bt { transform: rotateX(-90deg) translateZ(var(--half)); background: rgba(50,140,80,0.20); }
   .nb-doodle-label {
     position: absolute;
     bottom: 4px; left: 50%;
@@ -661,19 +660,12 @@
 
   <div class="nb-head">
     <h1>hi, i'm <em>vaibhav</em>.</h1>
-    <div class="nb-sub">full-stack engineer from <em>india</em>. i draw boxes, connect them with arrows, and eventually ship them. currently: <em>toolkitly</em>, <em>fuelflow</em>, <em>manidaro</em>, a doc-bot.</div>
+    <div class="nb-sub">full-stack engineer from <em>india</em>. i draw boxes, connect them with arrows, and eventually ship them. currently: <em>toolkitly</em>, <em>fuelflow</em>, <em>mani d'oro</em>, a doc-bot.</div>
   </div>
 
   <aside class="nb-doodle" aria-label="Rotating cube sketch">
     <div class="cube-wrap">
-      <div class="nb-cube">
-        <div class="face f"></div>
-        <div class="face b"></div>
-        <div class="face r"></div>
-        <div class="face l"></div>
-        <div class="face tp"></div>
-        <div class="face bt"></div>
-      </div>
+      <div class="nb-cube"><!-- cubelets injected by JS --></div>
     </div>
     <span class="nb-doodle-label"><span class="spin">↻</span>drag to spin</span>
   </aside>
@@ -698,7 +690,7 @@
     <a class="nb-item" href="#">
       <span class="tag">WIP · 003</span>
       <span class="arrow">◌</span>
-      <div class="nm">mani<em>daro</em></div>
+      <div class="nm">mani <em>d'oro</em></div>
       <div class="meta">in the making · 2026</div>
     </a>
     <a class="nb-item" href="#">
@@ -780,10 +772,41 @@
     }
   })();
 
-  // ===== Cube: auto-spin + drag to rotate =====
+  // ===== Cube: build 3x3x3 cubelets, auto-spin + drag to rotate =====
   (function cube() {
     const cube = document.querySelector('.nb-cube');
     if (!cube) return;
+
+    // Build 26 visible cubelets (skip center), only outward-facing faces
+    const FACES = [
+      ['f',  (x,y,z) => z ===  1],
+      ['b',  (x,y,z) => z === -1],
+      ['r',  (x,y,z) => x ===  1],
+      ['l',  (x,y,z) => x === -1],
+      ['tp', (x,y,z) => y ===  1],
+      ['bt', (x,y,z) => y === -1],
+    ];
+    const frag = document.createDocumentFragment();
+    for (let x = -1; x <= 1; x++) {
+      for (let y = -1; y <= 1; y++) {
+        for (let z = -1; z <= 1; z++) {
+          if (x === 0 && y === 0 && z === 0) continue;
+          const cubelet = document.createElement('div');
+          cubelet.className = 'cubelet';
+          cubelet.style.setProperty('--ox', x);
+          cubelet.style.setProperty('--oy', -y);  // CSS Y points down
+          cubelet.style.setProperty('--oz', z);
+          for (const [name, isVisible] of FACES) {
+            if (!isVisible(x, y, z)) continue;
+            const face = document.createElement('div');
+            face.className = `face ${name}`;
+            cubelet.appendChild(face);
+          }
+          frag.appendChild(cubelet);
+        }
+      }
+    }
+    cube.appendChild(frag);
 
     let rotX = -18, rotY = 35;
     let dragging = false;
