@@ -238,6 +238,17 @@
   @media (max-height: 720px) {
     .nb-doodle { display: none; }
   }
+  /* On narrower aspect ratios (4:3, square, portrait-ish) the hero text
+     wraps taller & wider. Shrink the cube, move it further right, and cap
+     subtitle width so nothing collides. */
+  @media (max-aspect-ratio: 7/5) and (min-width: 901px) {
+    .nb-doodle {
+      top: 44%;
+      --cube: clamp(110px, 9vw, 170px);
+      right: clamp(40px, 3vw, 90px);
+    }
+    .nb-sub { max-width: 500px; }
+  }
 
   .nb-doodle {
     --cube: clamp(140px, 12vw, 220px);
@@ -409,7 +420,20 @@
     font-weight: 700;
     font-size: 32px;
     line-height: 1;
+    display: inline-block;
+    background-image: linear-gradient(
+      to bottom,
+      transparent 42%,
+      rgba(var(--accent-rgb), 0.32) 42%,
+      rgba(var(--accent-rgb), 0.22) 94%,
+      transparent 94%
+    );
+    background-size: 0% 100%;
+    background-repeat: no-repeat;
+    background-position: 0 0;
+    transition: background-size 0.55s cubic-bezier(.55,0,.2,1);
   }
+  .nb-item:hover .nm { background-size: 100% 100%; }
   .nb-item .nm em { font-style: normal; color: var(--accent); transition: color 1.1s ease; }
   .nb-item .meta {
     font-family: 'Kalam', cursive;
@@ -423,7 +447,11 @@
     font-family: 'Caveat', cursive;
     font-size: 26px; color: var(--accent); font-weight: 700;
     animation: nb-arrow-bob 2.8s ease-in-out 5s infinite;
-    transition: color 1.1s ease;
+    transition: color 1.1s ease, transform 0.45s cubic-bezier(.4,0,.2,1);
+  }
+  .nb-item:hover .arrow {
+    animation: none;
+    transform: translate(5px, -5px) rotate(12deg) scale(1.18);
   }
 
   .nb-formula {
