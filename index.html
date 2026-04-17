@@ -281,13 +281,13 @@
     transform-style: preserve-3d;
     cursor: grab;
     will-change: transform;
+    animation: cube-breathe 13s cubic-bezier(.4,0,.5,1) infinite;
   }
-  .nb-cube.dragging { cursor: grabbing; }
-  .nb-cube.dragging .cubelet { animation-play-state: paused; }
+  .nb-cube.dragging { cursor: grabbing; animation-play-state: paused; }
 
-  @keyframes cubelet-breathe {
+  @keyframes cube-breathe {
     0%, 55%, 100% { --breathe: 1; }
-    72%           { --breathe: 1.12; }
+    72%           { --breathe: 1.1; }
     88%           { --breathe: 1; }
   }
 
@@ -299,12 +299,10 @@
     transform:
       translate3d(-50%, -50%, 0)
       translate3d(
-        calc(var(--ox) * var(--step) * var(--breathe)),
-        calc(var(--oy) * var(--step) * var(--breathe)),
-        calc(var(--oz) * var(--step) * var(--breathe))
+        calc(var(--ox) * var(--step) * var(--breathe) * var(--spread, 1)),
+        calc(var(--oy) * var(--step) * var(--breathe) * var(--spread, 1)),
+        calc(var(--oz) * var(--step) * var(--breathe) * var(--spread, 1))
       );
-    animation: cubelet-breathe 13s cubic-bezier(.4,0,.5,1) infinite both;
-    animation-delay: calc(var(--phase, 0) * -1s);
   }
   .cubelet .face {
     position: absolute; inset: 0;
@@ -522,6 +520,116 @@
     color: rgba(var(--ink-rgb),0.4);
     text-transform: uppercase;
     z-index: 4;
+  }
+
+  /* ==== Page loader (sun/moon based on time of day) ==== */
+  .nb-loader {
+    position: fixed;
+    inset: 0;
+    background: var(--paper);
+    z-index: 9999;
+    display: grid;
+    place-items: center;
+    color: var(--ink);
+    transition: opacity 0.65s ease, visibility 0.65s ease;
+  }
+  .nb-loader.gone { opacity: 0; visibility: hidden; }
+  .nb-loader-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 22px;
+    animation: loader-rise 0.7s cubic-bezier(.3,1.3,.5,1) both;
+  }
+  @keyframes loader-rise {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .nb-loader svg { display: none; width: 96px; height: 96px; }
+  .nb-loader.is-day   .sun  { display: block; }
+  .nb-loader.is-night .moon { display: block; }
+
+  .nb-loader .sun-rays {
+    transform-origin: 50px 50px;
+    animation: loader-spin 3.4s linear infinite;
+    stroke: var(--accent);
+  }
+  .nb-loader .sun-face {
+    transform-origin: 50px 50px;
+    animation: loader-pulse 1.4s ease-in-out infinite;
+  }
+  .nb-loader .sun-disk       { fill: var(--accent); }
+  .nb-loader .sun-disk-faint { fill: var(--accent); opacity: 0.22; }
+  .nb-loader .sun .eye   { fill: var(--paper); }
+  .nb-loader .sun .cheek { fill: rgba(255,110,110,0.55); }
+  .nb-loader .sun .mouth {
+    stroke: var(--paper);
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    fill: none;
+  }
+  @keyframes loader-spin { to { transform: rotate(360deg); } }
+  @keyframes loader-pulse {
+    0%, 100% { transform: scale(1); }
+    50%      { transform: scale(1.14); }
+  }
+
+  .nb-loader .moon-body {
+    animation: loader-rock 3s ease-in-out infinite;
+    transform-origin: 50px 50px;
+  }
+  .nb-loader .moon-shape {
+    fill: var(--ink);
+    fill-opacity: 0.14;
+    stroke: var(--ink);
+    stroke-width: 2;
+  }
+  .nb-loader .moon .crater {
+    fill: var(--ink);
+    opacity: 0.28;
+  }
+  .nb-loader .moon .eye {
+    stroke: var(--ink);
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    fill: none;
+  }
+  .nb-loader .moon .mouth {
+    stroke: var(--ink);
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    fill: none;
+  }
+  @keyframes loader-rock {
+    0%, 100% { transform: rotate(-5deg); }
+    50%      { transform: rotate(5deg); }
+  }
+  .nb-loader .star {
+    fill: var(--accent);
+    animation: loader-twinkle 1.8s ease-in-out infinite;
+    transform-origin: center;
+  }
+  .nb-loader .s1 { animation-delay: 0s; }
+  .nb-loader .s2 { animation-delay: 0.45s; }
+  .nb-loader .s3 { animation-delay: 0.9s; }
+  .nb-loader .s4 { animation-delay: 1.3s; }
+  @keyframes loader-twinkle {
+    0%, 100% { opacity: 0.25; transform: scale(0.85); }
+    50%      { opacity: 1;    transform: scale(1.4); }
+  }
+
+  .nb-loader .label {
+    font-family: 'Caveat', cursive;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ink-soft);
+    letter-spacing: 0.01em;
+    animation: loader-fade 1.6s ease-in-out infinite;
+  }
+  @keyframes loader-fade {
+    0%, 100% { opacity: 0.45; }
+    50%      { opacity: 1; }
   }
 
   /* ==== Dark mode + wave reveal ==== */
@@ -752,6 +860,42 @@
 </head>
 <body class="theme-dusk">
 
+  <div class="nb-loader" aria-hidden="true">
+    <div class="nb-loader-inner">
+      <svg class="sun" viewBox="0 0 100 100" aria-hidden="true">
+        <circle class="sun-disk-faint" cx="50" cy="50" r="20"/>
+        <circle class="sun-disk" cx="50" cy="50" r="13"/>
+        <g class="sun-rays" fill="none" stroke-width="2.6" stroke-linecap="round">
+          <line x1="50" y1="22" x2="50" y2="10"/>
+          <line x1="50" y1="78" x2="50" y2="90"/>
+          <line x1="22" y1="50" x2="10" y2="50"/>
+          <line x1="78" y1="50" x2="90" y2="50"/>
+          <line x1="30" y1="30" x2="21" y2="21"/>
+          <line x1="70" y1="70" x2="79" y2="79"/>
+          <line x1="30" y1="70" x2="21" y2="79"/>
+          <line x1="70" y1="30" x2="79" y2="21"/>
+        </g>
+      </svg>
+      <svg class="moon" viewBox="0 0 100 100" aria-hidden="true">
+        <g class="moon-body">
+          <circle class="moon-shape" cx="50" cy="50" r="26"/>
+          <circle class="crater" cx="39" cy="40" r="2.4"/>
+          <circle class="crater" cx="60" cy="58" r="1.8"/>
+          <circle class="crater" cx="58" cy="37" r="1.2"/>
+          <circle class="crater" cx="42" cy="60" r="1"/>
+          <path class="eye"   d="M 42 49 Q 44.5 45.5 47 49" fill="none"/>
+          <path class="eye"   d="M 53 49 Q 55.5 45.5 58 49" fill="none"/>
+          <path class="mouth" d="M 46 57 Q 50 60 54 57" fill="none"/>
+        </g>
+        <circle class="star s1" cx="18" cy="22" r="1.6"/>
+        <circle class="star s2" cx="86" cy="28" r="1.3"/>
+        <circle class="star s3" cx="82" cy="82" r="1.5"/>
+        <circle class="star s4" cx="14" cy="76" r="1"/>
+      </svg>
+      <div class="label">one moment…</div>
+    </div>
+  </div>
+
   <span class="tape t1"></span>
   <span class="tape t2"></span>
 
@@ -851,6 +995,24 @@
   </div>
 
 <script>
+  // ===== Loader: show sun/moon based on hour, fade after ~1.3s =====
+  (function loader() {
+    const el = document.querySelector('.nb-loader');
+    if (!el) return;
+    const h = new Date().getHours();
+    const night = h >= 21 || h < 5;
+    el.classList.add(night ? 'is-night' : 'is-day');
+    // Keep it on screen briefly, then fade
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        el.classList.add('gone');
+        setTimeout(() => el.remove(), 700);
+      }, 950);
+    });
+    // Safety: force hide after 3.5s regardless
+    setTimeout(() => el.classList.add('gone'), 3500);
+  })();
+
   document.getElementById('email').addEventListener('click', e => {
     e.preventDefault();
     window.location.href = 'mailto:' + ['vaibhav.heda799','gmail.com'].join('@');
@@ -919,12 +1081,11 @@
     }
   })();
 
-  // ===== Cube: build 3x3x3 cubelets, auto-spin + drag to rotate =====
+  // ===== Cube: 3x3x3 cubelets, scramble-in, drag with inertia, auto-spin =====
   (function cube() {
     const cube = document.querySelector('.nb-cube');
     if (!cube) return;
 
-    // Build 26 visible cubelets (skip center), only outward-facing faces
     const FACES = [
       ['f',  (x,y,z) => z ===  1],
       ['b',  (x,y,z) => z === -1],
@@ -933,6 +1094,9 @@
       ['tp', (x,y,z) => y ===  1],
       ['bt', (x,y,z) => y === -1],
     ];
+    const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const cubelets = [];
     const frag = document.createDocumentFragment();
     for (let x = -1; x <= 1; x++) {
       for (let y = -1; y <= 1; y++) {
@@ -941,30 +1105,69 @@
           const cubelet = document.createElement('div');
           cubelet.className = 'cubelet';
           cubelet.style.setProperty('--ox', x);
-          cubelet.style.setProperty('--oy', -y);  // CSS Y points down
+          cubelet.style.setProperty('--oy', -y);
           cubelet.style.setProperty('--oz', z);
-          // Phase offset: corners breathe ~1.5s after center cubelets → ripple
-          const dist = Math.hypot(x, y, z);
-          cubelet.style.setProperty('--phase', (dist * 0.85).toFixed(2));
           for (const [name, isVisible] of FACES) {
             if (!isVisible(x, y, z)) continue;
             const face = document.createElement('div');
             face.className = `face ${name}`;
             cubelet.appendChild(face);
           }
+          if (!reduce) {
+            // Scramble: random initial offset + tumble
+            const rx = (Math.random() - 0.5) * 520;
+            const ry = (Math.random() - 0.5) * 520;
+            const rz = (Math.random() - 0.5) * 420;
+            const ax = Math.random(), ay = Math.random(), az = Math.random();
+            const ang = (Math.random() - 0.5) * 900;
+            cubelet.style.transform =
+              `translate3d(-50%,-50%,0) translate3d(${rx|0}px, ${ry|0}px, ${rz|0}px) rotate3d(${ax.toFixed(2)}, ${ay.toFixed(2)}, ${az.toFixed(2)}, ${ang|0}deg)`;
+            cubelet.classList.add('entering');
+          }
           frag.appendChild(cubelet);
+          cubelets.push(cubelet);
         }
       }
     }
     cube.appendChild(frag);
 
+    // Trigger snap-to-place: next frame, add transition and clear inline transform
+    if (!reduce) {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          cubelets.forEach((c, i) => {
+            c.style.transition = 'transform 1000ms cubic-bezier(.22,.9,.3,1)';
+            c.style.transitionDelay = (i * 14) + 'ms';
+            c.style.transform = '';
+            const done = () => {
+              c.classList.remove('entering');
+              c.style.transition = '';
+              c.style.transitionDelay = '';
+              c.removeEventListener('transitionend', done);
+            };
+            c.addEventListener('transitionend', done);
+            setTimeout(done, 2000);
+          });
+        });
+      });
+    }
+
     let rotX = -18, rotY = 35;
     let dragging = false;
-    let lastX = 0, lastY = 0, pid = null;
+    let lastX = 0, lastY = 0, pid = null, moveTime = 0;
+    let velX = 0, velY = 0;               // deg per ms
     let resumeAfter = 0;
-    const SPIN_DEG_PER_SEC = 12;          // ~30s per revolution
-    const RESUME_DELAY_MS  = 1400;        // pause auto-spin briefly after release
-    const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const SPIN_DEG_PER_SEC = 12;
+    const RESUME_DELAY_MS  = 1800;
+    const DECAY_PER_SEC    = 2.8;          // exp decay rate for inertia
+    const MIN_VEL          = 0.002;
+    const SPREAD_K         = 0.55;         // how much velocity opens gaps
+    const SPREAD_MAX       = 1.22;
+    const MAX_DRAG_STEP    = 8;            // max deg applied per pointermove
+    const MAX_VEL          = 0.75;         // cap release velocity (deg/ms)
+    let   spread           = 1;
+
+    const clamp = (v, mn, mx) => Math.max(mn, Math.min(mx, v));
 
     const apply = () => {
       cube.style.transform = `translate(-50%,-50%) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
@@ -973,11 +1176,32 @@
 
     let last = performance.now();
     const tick = (now) => {
-      const dt = (now - last) / 1000;
+      const dt = now - last;
       last = now;
-      if (!dragging && !reduce && now >= resumeAfter) {
-        rotY += SPIN_DEG_PER_SEC * dt;
-        apply();
+      if (!dragging) {
+        const mag = Math.hypot(velX, velY);
+        if (mag > MIN_VEL) {
+          // Inertia — carry last drag velocity forward, decay exponentially
+          rotX = Math.max(-85, Math.min(85, rotX + velX * dt));
+          rotY += velY * dt;
+          const decay = Math.exp(-DECAY_PER_SEC * dt / 1000);
+          velX *= decay;
+          velY *= decay;
+          apply();
+          resumeAfter = now + RESUME_DELAY_MS * 0.5;
+        } else if (!reduce && now >= resumeAfter) {
+          rotY += SPIN_DEG_PER_SEC * dt / 1000;
+          apply();
+        }
+      }
+      // Spread: open cubelet gaps based on current angular speed
+      const vmag = Math.hypot(velX, velY);
+      const targetSpread = Math.min(1 + vmag * SPREAD_K, SPREAD_MAX);
+      const newSpread = spread + (targetSpread - spread) * 0.12;
+      // Only write when meaningfully different — avoids per-frame style invalidation on idle
+      if (Math.abs(newSpread - spread) > 0.0015 || Math.abs(newSpread - 1) > 0.003) {
+        spread = newSpread;
+        cube.style.setProperty('--spread', spread.toFixed(3));
       }
       requestAnimationFrame(tick);
     };
@@ -987,17 +1211,29 @@
       dragging = true;
       pid = e.pointerId;
       lastX = e.clientX; lastY = e.clientY;
+      velX = 0; velY = 0;
+      moveTime = performance.now();
       cube.classList.add('dragging');
       cube.setPointerCapture(pid);
       e.preventDefault();
     });
     cube.addEventListener('pointermove', (e) => {
       if (!dragging || e.pointerId !== pid) return;
+      const now = performance.now();
+      const dt = now - moveTime;
       const dx = e.clientX - lastX;
       const dy = e.clientY - lastY;
       lastX = e.clientX; lastY = e.clientY;
-      rotY += dx * 0.6;
-      rotX = Math.max(-85, Math.min(85, rotX - dy * 0.6));
+      // Clamp per-event rotation so a fast flick can't jump the cube
+      const dRotY =  clamp(dx * 0.6, -MAX_DRAG_STEP, MAX_DRAG_STEP);
+      const dRotX = -clamp(dy * 0.6, -MAX_DRAG_STEP, MAX_DRAG_STEP);
+      rotY += dRotY;
+      rotX = clamp(rotX + dRotX, -85, 85);
+      if (dt > 0 && dt < 80) {
+        velY = clamp(dRotY / dt, -MAX_VEL, MAX_VEL);
+        velX = clamp(dRotX / dt, -MAX_VEL, MAX_VEL);
+      }
+      moveTime = now;
       apply();
     });
     const release = (e) => {
@@ -1008,6 +1244,7 @@
       pid = null;
       last = performance.now();
       resumeAfter = last + RESUME_DELAY_MS;
+      // Keep velX/velY — tick loop picks up inertia
     };
     cube.addEventListener('pointerup', release);
     cube.addEventListener('pointercancel', release);
@@ -1060,7 +1297,7 @@
   // ===== 3D tilt on project cards =====
   (function cardTilt() {
     const cards = document.querySelectorAll('.nb-item');
-    const MAX = 7;
+    const MAX = 3;
     cards.forEach(card => {
       let raf = 0, px = 0, py = 0;
       card.addEventListener('pointermove', (e) => {
