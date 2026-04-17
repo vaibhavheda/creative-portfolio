@@ -482,18 +482,39 @@
   }
   body.is-dark .tape { background: rgba(180,160,110,0.30); }
 
-  .nb-wave {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 200;
-    background: var(--paper);
-    clip-path: circle(0 at var(--wx, 50vw) var(--wy, 50vh));
-    transition: clip-path 700ms cubic-bezier(.65,0,.35,1);
-    will-change: clip-path;
+  /* ==== View Transition: dark mode reveal from cursor ==== */
+  @property --mr {
+    syntax: '<length>';
+    inherits: true;
+    initial-value: 0px;
   }
-  .nb-wave.go {
-    clip-path: circle(160vmax at var(--wx, 50vw) var(--wy, 50vh));
+  ::view-transition-old(root) {
+    animation: none;
+    mix-blend-mode: normal;
+  }
+  ::view-transition-new(root) {
+    animation: dark-reveal 900ms cubic-bezier(.45,0,.2,1) both;
+    mix-blend-mode: normal;
+    -webkit-mask: radial-gradient(
+      circle at var(--wx, 50vw) var(--wy, 50vh),
+      #000 0,
+      #000 max(0px, calc(var(--mr) - 100px)),
+      rgba(0,0,0,0.55) max(0px, calc(var(--mr) - 40px)),
+      rgba(0,0,0,0.18) max(0px, calc(var(--mr) - 12px)),
+      transparent var(--mr)
+    );
+    mask: radial-gradient(
+      circle at var(--wx, 50vw) var(--wy, 50vh),
+      #000 0,
+      #000 max(0px, calc(var(--mr) - 100px)),
+      rgba(0,0,0,0.55) max(0px, calc(var(--mr) - 40px)),
+      rgba(0,0,0,0.18) max(0px, calc(var(--mr) - 12px)),
+      transparent var(--mr)
+    );
+  }
+  @keyframes dark-reveal {
+    from { --mr: 0px; }
+    to   { --mr: 170vmax; }
   }
 
   .nb-dark-toggle {
@@ -774,8 +795,6 @@
 
   <div class="nb-ver">V·1 · NOTEBOOK · MMXXVI</div>
 
-  <div class="nb-wave" aria-hidden="true"></div>
-
   <div class="nb-themes" role="radiogroup" aria-label="Color theme">
     <span class="nb-themes-label">INK</span>
     <button class="dot on" data-theme="dusk" aria-label="Dusk — blue on cream"></button>
@@ -945,15 +964,14 @@
     cube.addEventListener('pointercancel', release);
   })();
 
-  // ===== Dark-mode toggle with wave reveal from cursor =====
+  // ===== Dark-mode toggle: View Transitions API reveal from cursor =====
   (function darkWave() {
     const btn = document.querySelector('.nb-dark-toggle');
-    const wave = document.querySelector('.nb-wave');
-    if (!btn || !wave) return;
+    if (!btn) return;
     const body = document.body;
+    const root = document.documentElement;
     const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    // Track last cursor position so keyboard activations get a sensible wave origin
     let lastX = window.innerWidth / 2, lastY = window.innerHeight - 30;
     window.addEventListener('pointermove', (e) => {
       lastX = e.clientX; lastY = e.clientY;
@@ -964,41 +982,21 @@
       if (busy) return;
       const willBeDark = !body.classList.contains('is-dark');
 
-      if (reduce) {
+      if (reduce || !document.startViewTransition) {
         body.classList.toggle('is-dark', willBeDark);
         btn.setAttribute('aria-pressed', String(willBeDark));
         return;
       }
 
       busy = true;
-      body.style.setProperty('--wx', x + 'px');
-      body.style.setProperty('--wy', y + 'px');
-      // Force the wave's background to the destination paper color
-      wave.style.background = willBeDark ? '#14161c' : ({
-        dusk: '#f5efdd', tide: '#e6edf0', moss: '#e5ece2', void: '#e8e8e6'
-      }[[...body.classList].find(c => c.startsWith('theme-'))?.slice(6) || 'dusk']);
+      root.style.setProperty('--wx', x + 'px');
+      root.style.setProperty('--wy', y + 'px');
 
-      // Trigger expansion
-      void wave.offsetWidth;
-      wave.classList.add('go');
-
-      // Swap underlying state at ~half-way so the unveil reveals the new mode
-      setTimeout(() => {
+      const t = document.startViewTransition(() => {
         body.classList.toggle('is-dark', willBeDark);
         btn.setAttribute('aria-pressed', String(willBeDark));
-      }, 350);
-
-      const cleanup = (e) => {
-        if (e && e.propertyName !== 'clip-path') return;
-        wave.removeEventListener('transitionend', cleanup);
-        wave.style.transition = 'none';
-        wave.classList.remove('go');
-        requestAnimationFrame(() => {
-          wave.style.transition = '';
-          busy = false;
-        });
-      };
-      wave.addEventListener('transitionend', cleanup);
+      });
+      t.finished.finally(() => { busy = false; });
     };
 
     btn.addEventListener('click', () => toggle(lastX, lastY));
