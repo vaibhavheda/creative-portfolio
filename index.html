@@ -482,12 +482,7 @@
   }
   body.is-dark .tape { background: rgba(180,160,110,0.30); }
 
-  /* ==== View Transition: dark mode reveal from cursor ==== */
-  @property --mr {
-    syntax: '<length>';
-    inherits: true;
-    initial-value: 0px;
-  }
+  /* ==== View Transition: dark mode reveal from cursor (hard edge) ==== */
   ::view-transition-old(root) {
     animation: none;
     mix-blend-mode: normal;
@@ -495,26 +490,10 @@
   ::view-transition-new(root) {
     animation: dark-reveal 900ms cubic-bezier(.45,0,.2,1) both;
     mix-blend-mode: normal;
-    -webkit-mask: radial-gradient(
-      circle at var(--wx, 50vw) var(--wy, 50vh),
-      #000 0,
-      #000 max(0px, calc(var(--mr) - 100px)),
-      rgba(0,0,0,0.55) max(0px, calc(var(--mr) - 40px)),
-      rgba(0,0,0,0.18) max(0px, calc(var(--mr) - 12px)),
-      transparent var(--mr)
-    );
-    mask: radial-gradient(
-      circle at var(--wx, 50vw) var(--wy, 50vh),
-      #000 0,
-      #000 max(0px, calc(var(--mr) - 100px)),
-      rgba(0,0,0,0.55) max(0px, calc(var(--mr) - 40px)),
-      rgba(0,0,0,0.18) max(0px, calc(var(--mr) - 12px)),
-      transparent var(--mr)
-    );
   }
   @keyframes dark-reveal {
-    from { --mr: 0px; }
-    to   { --mr: 170vmax; }
+    from { clip-path: circle(0 at var(--wx, 50vw) var(--wy, 50vh)); }
+    to   { clip-path: circle(170vmax at var(--wx, 50vw) var(--wy, 50vh)); }
   }
 
   .nb-dark-toggle {
@@ -742,7 +721,7 @@
 
   <div class="nb-head">
     <h1>hi, i'm <em>vaibhav</em>.</h1>
-    <div class="nb-sub">full-stack engineer from <em>india</em>. i draw boxes, connect them with arrows, and eventually ship them. currently: <em>toolkitly</em>, <em>fuelflow</em>, <em>mani d'oro</em>, a doc-bot.</div>
+    <div class="nb-sub">full-stack <em>+ ai</em> engineer from <em>india</em>. <em>chronically shipping</em> — drawing boxes, connecting arrows, cooking anyway. the next one is "the one", fr fr.</div>
   </div>
 
   <aside class="nb-doodle" aria-label="Rotating cube sketch">
