@@ -20,22 +20,13 @@
   /* liquid-glass blob: a wavy, slowly-morphing edge (not a perfect sphere),
      a frosted glass shell that refracts the backdrop, screen-blended colour
      energy inside, and a soft outer glow. */
-  .vee-orb {
-    position: relative; width: 112px; height: 112px; margin: 0 auto 52px;
-    border-radius: 53% 47% 51% 49% / 50% 53% 47% 50%;
-    box-shadow:
-      inset 0 1px 10px rgba(255,255,255,0.22),
-      inset 0 -12px 24px -12px rgba(52,24,112,0.38),
-      0 0 56px -2px rgba(110,150,255,0.5);
-    overflow: hidden;
-    animation: veeMorph 8s ease-in-out infinite;
-  }
-  .vee-orb span { position: absolute; inset: 0; border-radius: 50%; filter: blur(13px); opacity: 1; mix-blend-mode: screen; will-change: transform; }
-  .vee-orb span:nth-child(1) { background: radial-gradient(circle at 38% 34%, #7db8ff, rgba(125,184,255,0) 58%); animation: veeA 3.6s ease-in-out infinite; }
-  .vee-orb span:nth-child(2) { background: radial-gradient(circle at 66% 42%, #45e8d8, rgba(69,232,216,0) 58%); animation: veeB 4.3s ease-in-out infinite; }
-  .vee-orb span:nth-child(3) { background: radial-gradient(circle at 50% 72%, #c489ff, rgba(196,137,255,0) 60%); animation: veeC 4.9s ease-in-out infinite; }
-  .vee-orb::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
-    background: radial-gradient(58% 48% at 33% 24%, rgba(255,255,255,0.7), rgba(255,255,255,0) 62%), linear-gradient(150deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 38%); }
+  .vee-orb { position: relative; width: 116px; height: 116px; margin: 0 auto 52px; animation: veeBreathe 5s ease-in-out infinite; }
+  .vee-orb::before { content: ""; position: absolute; inset: -16%; border-radius: 50%; pointer-events: none; background: radial-gradient(circle, rgba(110,150,255,0.45), rgba(150,110,255,0.16) 45%, rgba(110,150,255,0) 70%); filter: blur(10px); }
+  .vee-orb span { position: absolute; inset: 6%; border-radius: 50%; filter: blur(14px); opacity: 1; mix-blend-mode: screen; will-change: transform; }
+  .vee-orb span:nth-child(1) { background: radial-gradient(circle at 38% 36%, #7db8ff, rgba(125,184,255,0) 62%); animation: veeA 3.6s ease-in-out infinite; }
+  .vee-orb span:nth-child(2) { background: radial-gradient(circle at 64% 42%, #45e8d8, rgba(69,232,216,0) 62%); animation: veeB 4.3s ease-in-out infinite; }
+  .vee-orb span:nth-child(3) { background: radial-gradient(circle at 50% 68%, #c489ff, rgba(196,137,255,0) 64%); animation: veeC 4.9s ease-in-out infinite; }
+  .vee-orb::after { content: ""; position: absolute; inset: 0; border-radius: 50%; pointer-events: none; background: radial-gradient(46% 40% at 34% 26%, rgba(255,255,255,0.62), rgba(255,255,255,0) 60%); }
 
   .vee-msg { min-height: 100px; font-size: 21px; line-height: 1.55; font-weight: 500; color: #fff; letter-spacing: -0.01em; }
 
@@ -46,11 +37,7 @@
   .vee-skip { position: fixed; top: 22px; right: 26px; background: none; border: none; color: rgba(255,255,255,0.6); font-family: inherit; font-size: 14px; font-weight: 500; padding: 6px 4px; cursor: pointer; transition: color .14s; }
   .vee-skip:hover { color: rgba(255,255,255,0.95); }
 
-  @keyframes veeMorph {
-    0%,100% { border-radius: 54% 46% 52% 48% / 50% 54% 46% 50%; transform: scale(1); }
-    33% { border-radius: 47% 53% 45% 55% / 55% 47% 53% 45%; transform: scale(1.03); }
-    66% { border-radius: 52% 48% 55% 45% / 46% 53% 47% 54%; transform: scale(1); }
-  }
+  @keyframes veeBreathe { 0%,100% { transform: scale(1); } 50% { transform: scale(1.05); } }
   @keyframes veeHintPulse { 0%,100% { opacity: .38; } 50% { opacity: .82; } }
   @keyframes veeA { 0%,100% { transform: translate(-7%,-5%) scale(1); } 50% { transform: translate(9%,7%) scale(1.16); } }
   @keyframes veeB { 0%,100% { transform: translate(7%,-3%) scale(1.08); } 50% { transform: translate(-8%,8%) scale(.9); } }
