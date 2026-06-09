@@ -1,0 +1,10 @@
+@media (prefers-reduced-motion: reduce) {
+    #desktop::before, .wcode-head .pulse, .w-ship .ws-h .live i, .island .di-dot { animation: none; }
+    #boot { transition: opacity .15s linear; }
+    #boot .boot-log .bl-cur { animation: none; }
+    #boot .boot-log .bl-line { transition: none; transform: none; }
+    .stage-rise { animation: none; }
+    .lock { animation: lockOut .01s linear forwards; }
+    .sheet, .scrim, .app .ico, .island, .dock-item { transition: none; }
+    .vee-orb, .vee-orb span, .vee-hint { animation: none; }
+  }

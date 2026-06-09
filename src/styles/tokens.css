@@ -1,0 +1,55 @@
+
+  :root {
+    /* ---- CLEAN LIGHT PALETTE (Big Sur / Sonoma light) ----
+       Chrome (windows/dock/sheets) is NEUTRAL frosted white/grey — never wallpaper-tinted.
+       Color lives in the bright pastel wallpaper, the single blue accent, and the varied app icons. */
+    --accent: #007aff;            /* system blue */
+    --accent-2: #0a64d6;          /* deep blue */
+    --accent-hi: #2f93ff;         /* lifted blue */
+    --gold: #ff9f0a;             /* vivid amber (telemetry tag) */
+    --teal: #19a7b5;             /* fresh teal */
+    --live: #2fb24c;             /* crisp green for live */
+    --wip: #ff9500;              /* amber for wip */
+
+    --text: #1c1d22;             /* near-black ink */
+    --text-94: rgba(28,29,34,0.94);
+    --text-dim: #5b5e69;         /* dim grey ink */
+    --text-faint: rgba(70,73,84,0.55);
+
+    /* neutral frosted-white glass strokes (near-colorless) */
+    --glass-stroke: rgba(255,255,255,0.7);
+    --glass-stroke-strong: rgba(255,255,255,0.85);
+    --hairline: rgba(20,24,40,0.09);
+
+    --win-radius: 12px;
+    --window-shadow: 0 36px 80px -16px rgba(30,42,80,0.30), 0 14px 32px -14px rgba(30,42,80,0.22), 0 0 0 0.5px rgba(20,30,60,0.12);
+    --traffic-red: #ff5f57; --traffic-yellow: #febc2e; --traffic-green: #28c840;
+
+    --ios-blur: 28px;
+    --icon-radius: 22.37%;
+    --tile-radius: 22px;
+    --sheet-ease: cubic-bezier(.32,.72,0,1);
+    font-synthesis: none;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, 'Segoe UI', sans-serif;
+    -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility; color: var(--text);
+    letter-spacing: -0.011em; background: #e7eefb;
+  }
+  a { color: inherit; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+
+  /* ===== Face switching: only one face shown at a time ===== */
+  #desktop { display: none; }
+  #phone-stage { display: none; }
+  @media (min-width: 820px) {
+    #desktop { display: block; }
+    body { overflow: hidden; user-select: none; }
+  }
+  @media (max-width: 819px) {
+    #phone-stage { display: flex; }
+    body { overflow-x: hidden; }
+  }
