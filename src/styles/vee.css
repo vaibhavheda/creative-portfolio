@@ -1,0 +1,71 @@
+/* ============================================================
+     V — Siri-style full-screen guide overlay
+     Dark glass takeover (works in both themes), a glowing energy
+     orb, and V's scripted lines typed out. Shown once on first
+     visit; re-openable from Control Center ("Meet V").
+     ============================================================ */
+
+  #vee.vee {
+    position: fixed; inset: 0; z-index: 99990; display: grid; place-items: center;
+    background: rgba(8,10,16,0.52);
+    -webkit-backdrop-filter: blur(34px) saturate(140%); backdrop-filter: blur(34px) saturate(140%);
+    opacity: 0; pointer-events: none; transition: opacity .42s ease;
+  }
+  #vee[aria-hidden="false"] { opacity: 1; pointer-events: auto; }
+
+  /* content sits a touch below centre for breathing room */
+  .vee-inner { text-align: center; max-width: 470px; padding: 0 34px; transform: translateY(calc(3vh + 12px)) scale(.985); transition: transform .45s cubic-bezier(.2,.8,.2,1); }
+  #vee[aria-hidden="false"] .vee-inner { transform: translateY(3vh); }
+
+  /* liquid-glass blob: a wavy, slowly-morphing edge (not a perfect sphere),
+     a frosted glass shell that refracts the backdrop, screen-blended colour
+     energy inside, and a soft outer glow. */
+  .vee-orb {
+    position: relative; width: 112px; height: 112px; margin: 0 auto 52px;
+    border-radius: 53% 47% 51% 49% / 50% 53% 47% 50%;
+    -webkit-backdrop-filter: blur(3px) saturate(150%); backdrop-filter: blur(3px) saturate(150%);
+    box-shadow:
+      inset 0 1px 10px rgba(255,255,255,0.28),
+      inset 0 0 0 1px rgba(255,255,255,0.2),
+      inset 0 -11px 20px -8px rgba(52,24,112,0.45),
+      0 0 52px -4px rgba(110,150,255,0.55);
+    overflow: hidden;
+    animation: veeMorph 8s ease-in-out infinite;
+  }
+  .vee-orb span { position: absolute; inset: 0; border-radius: 50%; filter: blur(13px); opacity: 1; mix-blend-mode: screen; will-change: transform; }
+  .vee-orb span:nth-child(1) { background: radial-gradient(circle at 38% 34%, #7db8ff, rgba(125,184,255,0) 58%); animation: veeA 3.6s ease-in-out infinite; }
+  .vee-orb span:nth-child(2) { background: radial-gradient(circle at 66% 42%, #45e8d8, rgba(69,232,216,0) 58%); animation: veeB 4.3s ease-in-out infinite; }
+  .vee-orb span:nth-child(3) { background: radial-gradient(circle at 50% 72%, #c489ff, rgba(196,137,255,0) 60%); animation: veeC 4.9s ease-in-out infinite; }
+  .vee-orb::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+    background: radial-gradient(58% 48% at 33% 24%, rgba(255,255,255,0.7), rgba(255,255,255,0) 62%), linear-gradient(150deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 38%); }
+
+  .vee-msg { min-height: 100px; font-size: 21px; line-height: 1.55; font-weight: 500; color: #fff; letter-spacing: -0.01em; }
+
+  /* bottom "press any key" hint — advances the script */
+  .vee-hint { position: fixed; bottom: 42px; left: 0; right: 0; text-align: center; color: rgba(255,255,255,0.5); font-size: 13px; font-weight: 500; letter-spacing: 0.02em; pointer-events: none; animation: veeHintPulse 2.4s ease-in-out infinite; }
+
+  /* Skip — plain inline text, no box/corners */
+  .vee-skip { position: fixed; top: 22px; right: 26px; background: none; border: none; color: rgba(255,255,255,0.6); font-family: inherit; font-size: 14px; font-weight: 500; padding: 6px 4px; cursor: pointer; transition: color .14s; }
+  .vee-skip:hover { color: rgba(255,255,255,0.95); }
+
+  @keyframes veeMorph {
+    0%,100% { border-radius: 54% 46% 52% 48% / 50% 54% 46% 50%; transform: scale(1); }
+    33% { border-radius: 47% 53% 45% 55% / 55% 47% 53% 45%; transform: scale(1.03); }
+    66% { border-radius: 52% 48% 55% 45% / 46% 53% 47% 54%; transform: scale(1); }
+  }
+  @keyframes veeHintPulse { 0%,100% { opacity: .38; } 50% { opacity: .82; } }
+  @keyframes veeA { 0%,100% { transform: translate(-7%,-5%) scale(1); } 50% { transform: translate(9%,7%) scale(1.16); } }
+  @keyframes veeB { 0%,100% { transform: translate(7%,-3%) scale(1.08); } 50% { transform: translate(-8%,8%) scale(.9); } }
+  @keyframes veeC { 0%,100% { transform: translate(1%,7%) scale(.94); } 50% { transform: translate(5%,-7%) scale(1.2); } }
+
+  @media (max-width: 819px) {
+    .vee-orb { width: 92px; height: 92px; margin-bottom: 44px; }
+    .vee-msg { font-size: 19px; min-height: 104px; }
+    .vee-inner { padding: 0 26px; transform: translateY(calc(2vh + 12px)) scale(.985); }
+    #vee[aria-hidden="false"] .vee-inner { transform: translateY(2vh); }
+    .vee-skip { top: 15px; right: 16px; }
+  }
+
+  /* Control Center "Meet V" trigger — orb-tinted icon */
+  .cc-meet-btn { cursor: pointer; }
+  .cc-ic-v { background: linear-gradient(150deg, #6ea8ff, #b694ff) !important; color: #fff !important; }
