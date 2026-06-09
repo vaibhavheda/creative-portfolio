@@ -23,12 +23,10 @@
   .vee-orb {
     position: relative; width: 112px; height: 112px; margin: 0 auto 52px;
     border-radius: 53% 47% 51% 49% / 50% 53% 47% 50%;
-    -webkit-backdrop-filter: blur(3px) saturate(150%); backdrop-filter: blur(3px) saturate(150%);
     box-shadow:
-      inset 0 1px 10px rgba(255,255,255,0.28),
-      inset 0 0 0 1px rgba(255,255,255,0.2),
-      inset 0 -11px 20px -8px rgba(52,24,112,0.45),
-      0 0 52px -4px rgba(110,150,255,0.55);
+      inset 0 1px 10px rgba(255,255,255,0.22),
+      inset 0 -12px 24px -12px rgba(52,24,112,0.38),
+      0 0 56px -2px rgba(110,150,255,0.5);
     overflow: hidden;
     animation: veeMorph 8s ease-in-out infinite;
   }
