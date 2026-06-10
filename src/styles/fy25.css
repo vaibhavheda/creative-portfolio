@@ -1,0 +1,169 @@
+/* ===== FY25 — locked deck (gate dialog, deck window, phone viewer) ===== */
+
+/* ---- shared: locked status chip + dot ---- */
+.status-chip.chip-locked { color: var(--text-dim); background: rgba(20,24,40,0.07); }
+.status-chip.chip-locked .dot { background: var(--text-faint); }
+.pill .lock-d { display:inline-block; width:7px; height:7px; border-radius:50%; background: var(--text-faint); margin-right:5px; }
+.sw-fy25, .ic-fy25 { background: linear-gradient(160deg, #3c3f4a, #15161c); }
+
+/* ---- desktop gate dialog ---- */
+.fy25-gate {
+  position: fixed; inset: 0; z-index: 9000; display: none;
+  align-items: center; justify-content: center;
+  background: rgba(20,24,40,0.25);
+}
+.fy25-gate[aria-hidden="false"] { display: flex; }
+.fy25-card {
+  width: 300px; padding: 22px 20px 16px; text-align: center;
+  background: rgba(248,249,252,0.97); border-radius: 14px;
+  box-shadow: 0 24px 60px -10px rgba(30,42,80,0.4), 0 0 0 0.5px rgba(20,30,60,0.14);
+}
+.fy25-card h4 { font-size: 13.5px; font-weight: 700; margin: 10px 0 3px; }
+.fy25-card p { font-size: 11.5px; color: var(--text-dim); margin: 0 0 12px; line-height: 1.45; }
+.fy25-card input {
+  width: 100%; border: 1px solid rgba(20,24,40,0.16); border-radius: 7px;
+  padding: 7px 10px; font-size: 16px; background: #fff; font-family: inherit;
+}
+.fy25-card input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.fy25-err { min-height: 16px; font-size: 11px; color: var(--traffic-red); margin-top: 6px; }
+.fy25-actions { display: flex; gap: 8px; margin-top: 8px; }
+.fy25-actions button {
+  flex: 1; font-size: 12.5px; font-weight: 600; padding: 7px 0; border-radius: 7px;
+  border: none; cursor: pointer; background: rgba(28,29,34,0.06); color: var(--text); font-family: inherit;
+}
+.fy25-actions .fy25-unlock { background: var(--accent); color: #fff; }
+.fy25-card.busy .fy25-unlock { opacity: 0.6; pointer-events: none; }
+@keyframes fy25-shake {
+  10%, 90% { transform: translateX(-1px); } 20%, 80% { transform: translateX(4px); }
+  30%, 50%, 70% { transform: translateX(-8px); } 40%, 60% { transform: translateX(8px); }
+}
+.fy25-card.shake { animation: fy25-shake 0.5s cubic-bezier(0.36,0.07,0.19,0.97) both; }
+.fy25-card.flash { outline: 2px solid var(--traffic-red); }
+
+/* ---- deck window ---- */
+#fy25 { width: min(900px, 84vw); left: 7%; top: 7%; flex-direction: column; }
+.fy25-body { display: flex; flex-direction: column; min-height: 0; flex: 1; }
+.fy25-stage { position: relative; aspect-ratio: 16 / 9; overflow: hidden;
+  background: linear-gradient(165deg, #fdfdfe, #eef2fa); }
+#fy25:fullscreen { width: 100%; height: 100%; left: 0; top: 0; border-radius: 0; }
+#fy25:fullscreen .fy25-stage { aspect-ratio: auto; flex: 1; }
+/* Safari 15 needs the prefixed selector; kept separate — an unknown selector
+   in a list would drop the whole rule. */
+#fy25:-webkit-full-screen { width: 100%; height: 100%; left: 0; top: 0; border-radius: 0; }
+#fy25:-webkit-full-screen .fy25-stage { aspect-ratio: auto; flex: 1; }
+.f-frame { position: absolute; inset: 0; opacity: 0; pointer-events: none; transition: opacity 0.28s ease; }
+.f-frame.on { opacity: 1; pointer-events: auto; }
+
+/* ---- slides (style B — native) ---- */
+.f-slide { height: 100%; display: flex; flex-direction: column; justify-content: center; padding: 6% 8%; }
+.f-slide.f-center { align-items: flex-start; }
+.f-kicker { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10.5px;
+  text-transform: uppercase; letter-spacing: 0.16em; color: var(--accent-2); margin-bottom: 14px; }
+.f-slide h1 { font-size: clamp(24px, 3.4vw, 44px); font-weight: 700; letter-spacing: -0.03em;
+  line-height: 1.06; margin: 0 0 12px; color: var(--text); }
+.f-slide h1 em { font-style: normal; color: var(--accent); }
+.f-sub { font-size: 12.5px; color: var(--text-dim); font-family: 'JetBrains Mono', ui-monospace, monospace; }
+.f-sub-strong { font-size: 17px; color: var(--text-94); margin-bottom: 10px; }
+.f-sub-strong em { font-style: italic; color: var(--accent); }
+.f-statrow { display: flex; gap: 30px; margin-top: 26px; flex-wrap: wrap; }
+.f-stat b { display: block; font-size: 24px; font-weight: 700; color: var(--accent-2); line-height: 1.1; }
+.f-stat span { font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-faint);
+  font-family: 'JetBrains Mono', ui-monospace, monospace; }
+.f-numgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px 24px; margin-top: 10px; }
+.f-numgrid .f-stat b { font-size: 30px; }
+.f-chips { display: flex; flex-wrap: wrap; gap: 7px; margin: 6px 0 16px; }
+.f-chip { font-size: 11px; padding: 4px 10px; border-radius: 999px;
+  background: rgba(0,122,255,0.09); color: var(--accent-2); font-weight: 600; }
+.f-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 8px; }
+.f-grid-3 { grid-template-columns: repeat(3, 1fr); }
+.f-grid-2 { grid-template-columns: repeat(2, 1fr); max-width: 540px; }
+.f-card { border: 1px solid var(--hairline); border-radius: 10px; padding: 12px 12px 10px;
+  background: rgba(255,255,255,0.66); }
+.f-card-kicker { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 9px;
+  text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-faint); margin-bottom: 6px; }
+.f-card-title { font-size: 12.5px; font-weight: 700; line-height: 1.25; color: var(--text); }
+.f-card-title em { font-style: normal; color: var(--accent); display: block; font-weight: 600; }
+.f-card-line { font-size: 10.5px; color: var(--text-dim); margin-top: 5px; }
+.f-card-stack { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 9px;
+  color: var(--text-faint); margin-top: 7px; }
+.f-big { font-size: clamp(72px, 12vw, 150px) !important; color: var(--accent) !important; margin-bottom: 4px !important; }
+
+/* ---- deck control bar ---- */
+.fy25-bar { display: flex; align-items: center; gap: 10px; padding: 9px 14px;
+  border-top: 1px solid var(--hairline); background: rgba(250,250,252,0.9); }
+.fy25-bar button { width: 26px; height: 26px; border-radius: 7px; border: none; cursor: pointer;
+  background: rgba(28,29,34,0.06); color: var(--text-dim); display: flex; align-items: center; justify-content: center; }
+.fy25-bar button:hover { background: rgba(28,29,34,0.12); }
+.fy25-dots { display: flex; gap: 6px; margin: 0 auto; }
+.fy25-dots button { width: 7px; height: 7px; min-width: 7px; padding: 0; border-radius: 50%;
+  background: rgba(20,24,40,0.18); }
+.fy25-dots button.on { background: var(--accent); }
+.fy25-counter { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; color: var(--text-dim); }
+
+/* ---- phone: gate + viewer ---- */
+.fy25-pgate, .fy25-pview {
+  position: absolute; inset: 0; z-index: 60; display: none; flex-direction: column;
+  background: #0e0f13; color: #f0f1f5;
+  padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom);
+}
+.fy25-pgate[aria-hidden="false"], .fy25-pview[aria-hidden="false"] { display: flex; }
+.fy25-pgate { align-items: center; justify-content: flex-start; }
+.fy25-pclose { position: absolute; top: calc(14px + env(safe-area-inset-top)); right: 14px; z-index: 2;
+  width: 30px; height: 30px; border-radius: 50%; border: none; cursor: pointer;
+  background: rgba(255,255,255,0.14); color: #fff; font-size: 14px; line-height: 1; }
+.fy25-pcard { width: 100%; max-width: 290px; text-align: center; padding: 0 18px; margin-top: 18vh; }
+.fy25-plock { font-size: 0; margin-bottom: 12px; }
+.fy25-pcard h3 { font-size: 15px; font-weight: 700; margin: 0 0 4px; }
+.fy25-pcard p { font-size: 12px; color: rgba(255,255,255,0.55); margin: 0 0 16px; }
+.fy25-pcard input { width: 100%; border: none; border-radius: 9px; padding: 11px 12px;
+  font-size: 16px; text-align: center; background: rgba(255,255,255,0.12); color: #fff; font-family: inherit; }
+.fy25-perr { min-height: 16px; font-size: 11px; color: #ff6961; margin-top: 8px; }
+.fy25-punlock { width: 100%; margin-top: 10px; padding: 11px 0; border: none; border-radius: 9px;
+  background: var(--accent); color: #fff; font-size: 13.5px; font-weight: 600; cursor: pointer; font-family: inherit; }
+.fy25-pcard.shake { animation: fy25-shake 0.5s cubic-bezier(0.36,0.07,0.19,0.97) both; }
+.fy25-pcard.flash { outline: 2px solid #ff6961; border-radius: 12px; }
+
+.fy25-pview { background: linear-gradient(165deg, #fdfdfe, #eef2fa); color: var(--text); }
+.fy25-pview .fy25-pclose { background: rgba(20,24,40,0.1); color: var(--text); }
+.fy25-ptrack { position: relative; flex: 1; min-height: 0; overflow: hidden; }
+.fy25-ptrack .f-frame { position: absolute; inset: 0; }
+.fy25-ptrack .f-slide { padding: 76px 22px 36px; justify-content: flex-start; overflow-y: auto; }
+.fy25-ptrack .f-slide.f-center { justify-content: center; padding-top: 48px; padding-bottom: 72px; }
+.fy25-ptrack .f-slide h1 { font-size: 26px; }
+.fy25-ptrack .f-numgrid, .fy25-ptrack .f-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.fy25-ptrack .f-statrow { gap: 18px; }
+.fy25-pbar { display: flex; align-items: center; gap: 12px; padding: 10px 16px calc(12px + env(safe-area-inset-bottom)); }
+.fy25-pbar button { width: 34px; height: 34px; border-radius: 50%; border: none; cursor: pointer;
+  background: rgba(20,24,40,0.08); color: var(--text); font-size: 16px; }
+.fy25-pdots { display: flex; gap: 6px; margin: 0 auto; }
+.fy25-pdots i { width: 6px; height: 6px; border-radius: 50%; background: rgba(20,24,40,0.18); }
+.fy25-pdots i.on { background: var(--accent); }
+
+/* ---- dark theme ---- */
+html[data-theme="dark"] .fy25-card { background: rgba(44,46,54,0.97); }
+html[data-theme="dark"] .fy25-card h4 { color: #f0f1f5; }
+html[data-theme="dark"] .fy25-card input { background: rgba(255,255,255,0.08); color: #f0f1f5;
+  border-color: rgba(255,255,255,0.14); }
+html[data-theme="dark"] .fy25-actions button { background: rgba(255,255,255,0.1); color: #f0f1f5; }
+html[data-theme="dark"] .fy25-actions .fy25-unlock { background: var(--accent); color: #fff; }
+html[data-theme="dark"] .fy25-stage,
+html[data-theme="dark"] .fy25-pview { background: linear-gradient(165deg, #181a20, #101218); }
+html[data-theme="dark"] .f-slide h1, html[data-theme="dark"] .f-card-title { color: #eceef4; }
+html[data-theme="dark"] .f-sub-strong { color: rgba(236,238,244,0.92); }
+html[data-theme="dark"] .f-card { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.08); }
+html[data-theme="dark"] .f-chip { background: rgba(47,147,255,0.16); }
+html[data-theme="dark"] .fy25-bar { background: rgba(30,32,38,0.9); border-top-color: rgba(255,255,255,0.08); }
+html[data-theme="dark"] .fy25-bar button { background: rgba(255,255,255,0.1); color: rgba(236,238,244,0.8); }
+html[data-theme="dark"] .fy25-pview .fy25-pclose,
+html[data-theme="dark"] .fy25-pbar button { background: rgba(255,255,255,0.12); color: #eceef4; }
+html[data-theme="dark"] .fy25-pdots i { background: rgba(255,255,255,0.22); }
+html[data-theme="dark"] .fy25-pdots i.on { background: var(--accent-hi); }
+html[data-theme="dark"] .fy25-dots button { background: rgba(255,255,255,0.22); }
+html[data-theme="dark"] .fy25-dots button.on { background: var(--accent-hi); }
+html[data-theme="dark"] .status-chip.chip-locked { background: rgba(255,255,255,0.08); color: rgba(236,238,244,0.7); }
+
+/* ---- reduced motion ---- */
+@media (prefers-reduced-motion: reduce) {
+  .f-frame { transition: none; }
+  .fy25-card.shake, .fy25-pcard.shake { animation: none; }
+}

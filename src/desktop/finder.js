@@ -6,16 +6,20 @@ function sized(key, n) {
   return SVG[key].replace('<svg ', '<svg width="' + n + '" height="' + n + '" ');
 }
 function statusChip(status) {
+  if (status === 'locked')
+    return '<span class="status-chip chip-locked"><span class="dot"></span>Locked</span>';
   return status === 'live'
     ? '<span class="status-chip chip-live"><span class="dot"></span>Live</span>'
     : '<span class="status-chip chip-wip"><span class="dot"></span>In review</span>';
 }
 function rowHref(p) {
+  if (p.locked) return ' href="#" data-fy25-open';
   if (p.href) return ' href="' + p.href + '" target="_blank" rel="noopener"';
   if (p.download) return ' href="' + p.download + '" download';
   return ' href="#"';
 }
 function tableLink(p) {
+  if (p.locked) return '<a href="#" data-fy25-open>Unlock</a>';
   if (p.href) return '<a href="' + p.href + '" target="_blank" rel="noopener">' + p.linkLabel + ' ↗</a>';
   if (p.download) return '<a href="' + p.download + '" download>Download ↓</a>';
   return '<span class="nolink">' + (p.linkLabel || '—') + '</span>';
@@ -72,8 +76,8 @@ export function renderFinder(pred) {
 
   var grid = document.querySelector('#view-icon .icon-grid');
   if (grid) grid.innerHTML = items.map(function (p) {
-    var badge = p.status === 'live' ? 'var(--live)' : 'var(--wip)';
-    var label = p.status === 'live' ? 'Live' : 'In review';
+    var badge = p.status === 'live' ? 'var(--live)' : p.locked ? 'var(--text-faint)' : 'var(--wip)';
+    var label = p.status === 'live' ? 'Live' : p.locked ? 'Locked' : 'In review';
     return '<a class="icon-tile"' + rowHref(p) + '>' +
       '<div class="doc-ico ' + p.swatch + '">' + sized(p.icon, 30) + '<span class="badge" style="background:' + badge + '"></span></div>' +
       '<div class="it-name">' + p.name + '</div>' +
