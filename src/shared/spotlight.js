@@ -17,7 +17,7 @@ function buildIndex() {
     var p = PROJECTS[i];
     items.push({
       kind: 'project', scope: 'work', title: p.name, meta: p.tag,
-      svg: SVG[p.icon], swatch: p.swatch,
+      svg: SVG[p.icon], swatch: p.swatch, locked: p.locked,
       terms: ([p.name, p.tag, p.sub].concat(p.stack).concat(p.tags || [])).join(' ').toLowerCase(),
       href: p.href
     });
@@ -98,6 +98,8 @@ export function initSpotlight() {
   function openItem(item) {
     if (!item) return;
     close();
+    // Locked entries (FY25) route to the unlock flow on whichever face is live.
+    if (item.locked) { document.dispatchEvent(new CustomEvent('fy25:open')); return; }
     if (item.kind === 'cmd') {
       if (item.cmd === 'vee') openVee();
       else if (item.cmd === 'email') window.open('mailto:vaibhav.heda799@gmail.com');
