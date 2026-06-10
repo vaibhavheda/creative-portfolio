@@ -15,7 +15,8 @@ export const SVG = {
   github:    '<svg viewBox="0 0 24 24" fill="#fff"><path d="M12 1.5A10.5 10.5 0 0 0 8.7 22c.5.1.7-.2.7-.5v-1.8c-2.9.6-3.5-1.4-3.5-1.4-.5-1.2-1.1-1.5-1.1-1.5-1-.6.1-.6.1-.6 1 .1 1.6 1 1.6 1 .9 1.6 2.4 1.1 3 .9.1-.7.4-1.1.7-1.4-2.3-.3-4.8-1.2-4.8-5.2 0-1.1.4-2.1 1-2.8-.1-.3-.4-1.3.1-2.8 0 0 .9-.3 2.8 1a9.6 9.6 0 0 1 5 0c1.9-1.3 2.8-1 2.8-1 .5 1.5.2 2.5.1 2.8.7.7 1 1.7 1 2.8 0 4-2.5 4.9-4.8 5.2.4.3.7 1 .7 1.9v2.8c0 .3.2.6.7.5A10.5 10.5 0 0 0 12 1.5z"/></svg>',
   linkedin:  '<svg viewBox="0 0 24 24" fill="#fff"><path d="M4.98 3.5A2.5 2.5 0 1 0 5 8.5a2.5 2.5 0 0 0 0-5zM3 9h4v12H3V9zm6 0h3.8v1.7h.05c.53-1 1.8-2 3.7-2 4 0 4.7 2.6 4.7 6V21h-4v-5.3c0-1.3 0-2.9-1.8-2.9s-2.05 1.4-2.05 2.8V21H9V9z"/></svg>',
   mail:      '<svg viewBox="0 0 24 24" fill="#fff"><path d="M3 5h18a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zm9 7L4 7v1l8 5 8-5V7l-8 5z"/></svg>',
-  resume:    '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>'
+  resume:    '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>',
+  fy25:      '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 20H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H20a2 2 0 0 1 2 2v2"/><rect width="8" height="5" x="14" y="17" rx="1"/><path d="M20 17v-2a2 2 0 0 0-4 0v2"/></svg>'
 };
 
 // --- Projects: the catalogue. One entry feeds Finder (all views) + the phone sheet. ---
@@ -66,12 +67,21 @@ export const PROJECTS = [
     linkLabel: 'landing soon',
     sub: 'A menu-bar deck of one-click actions — config-driven, hot-reloaded.',
     body: "A macOS menu-bar utility: click the icon and a glass deck of one-click actions drops down — shell commands, app launches, a dark-mode toggle, a keyboard-wipe lock, a keystroke HUD. JSON config, hot-reloaded. macOS 26.5, Apple Silicon. Unsigned for now — the first open is a right-click → Open. Landing soon."
+  },
+  {
+    key: 'fy25', name: 'FY25', tag: 'Year in review', year: '2025–26', status: 'locked', locked: true,
+    icon: 'fy25', swatch: 'sw-fy25', tile: 'ic-fy25',
+    tags: [], stack: [],
+    linkLabel: 'unlock',
+    sub: 'A password-protected year of client work.',
+    body: 'One fiscal year of platform work, locked behind a password. If you have it, the review is yours.'
   }
 ];
 
 const STATUS_META = {
   live: '<span class="pill"><span class="live-d"></span>Live</span>',
-  review: '<span class="pill"><span class="wip-d"></span>In review</span>'
+  review: '<span class="pill"><span class="wip-d"></span>In review</span>',
+  locked: '<span class="pill"><span class="lock-d"></span>Locked</span>'
 };
 
 // Build the phone-sheet app map from PROJECTS, then add the non-project entries.
@@ -101,23 +111,23 @@ export const APPS = Object.assign({}, projectApps, {
   },
   stack: {
     icon: 'ic-stack', svg: SVG.stack, title: 'Selected Work',
-    meta: ['<span class="pill">' + PROJECTS.length + ' apps</span>', '<span class="pill">' + PROJECTS.filter(p => p.status === 'live').length + ' live</span>'],
+    meta: ['<span class="pill">' + PROJECTS.filter(p => !p.locked).length + ' apps</span>', '<span class="pill">' + PROJECTS.filter(p => p.status === 'live').length + ' live</span>'],
     body: 'The grid, sorted. All live and in use.',
-    links: PROJECTS.map(p => ({ l: p.name, v: p.year + ' · ' + (p.status === 'live' ? 'Live' : 'In review'), app: p.key, key: p.key }))
+    links: PROJECTS.map(p => ({ l: p.name, v: p.year + ' · ' + (p.status === 'live' ? 'Live' : p.locked ? 'Locked' : 'In review'), app: p.key, key: p.key }))
   },
   search: {
     icon: 'ic-stack', svg: SVG.search, title: 'Search',
     meta: ['<span class="pill">Spotlight</span>'],
     body: 'Looking for the work? Tap a result.',
     links: [
-      { l: 'Selected Work', v: PROJECTS.length + ' apps', app: 'stack', key: 'stack' },
+      { l: 'Selected Work', v: PROJECTS.filter(p => !p.locked).length + ' apps', app: 'stack', key: 'stack' },
       { l: 'About Vaibhav', v: 'profile', app: 'about', key: 'about' }
-    ].concat(PROJECTS.map(p => ({ l: p.name, v: p.status === 'live' ? 'Live' : 'In review', app: p.key, key: p.key })))
+    ].concat(PROJECTS.map(p => ({ l: p.name, v: p.status === 'live' ? 'Live' : p.locked ? 'Locked' : 'In review', app: p.key, key: p.key })))
   }
 });
 
 export const ICOCLASS = {
   github: 'ic-github', linkedin: 'ic-linkedin', mail: 'ic-mail',
   toolkitly: 'ic-toolkitly', fuelflow: 'ic-fuelflow', docbot: 'ic-docbot',
-  about: 'ic-about', stack: 'ic-stack', resume: 'ic-resume'
+  about: 'ic-about', stack: 'ic-stack', resume: 'ic-resume', fy25: 'ic-fy25'
 };

@@ -17,7 +17,7 @@ export function initBoot() {
 
   // The log. First line is the hostname (head weight); rest are dim status lines.
   // Survivor count comes straight off the catalogue.
-  var count = (PROJECTS && PROJECTS.length) || 4;
+  var count = (PROJECTS && PROJECTS.filter(function (p) { return !p.locked; }).length) || 4;
   var LINES = [
     { text: 'vheda.os', head: true },
     { text: 'mounting catalogue … ' + count + ' survivors' },
