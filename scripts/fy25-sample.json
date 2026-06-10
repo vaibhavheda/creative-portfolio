@@ -1,0 +1,50 @@
+{
+  "identity": {
+    "name": "Vaibhav Heda",
+    "role": "full-stack engineer",
+    "company": "SuperProcure",
+    "period": { "label": "FY 2025 / 26", "labelShort": "FY 25/26" }
+  },
+  "tagline": {
+    "heroDisplay": "What I",
+    "heroDisplayEm": "shipped",
+    "heroDisplayTail": "this year.",
+    "heroSub": "sixteen achievements · one fiscal year.",
+    "closingMain": "A year ·",
+    "closingMainEm": "well",
+    "closingTail": "shipped.",
+    "closingSub": "fiscal year two-five / two-six · fin"
+  },
+  "breadth": ["Trip Board", "Parking Board", "DV Board", "Docs", "Auth", "Masters", "Tracking", "Notifications"],
+  "stats": {
+    "total": 313, "critical": 97, "high": 113, "bugs": 86,
+    "tasks": 204, "modulesTouched": 15, "clientsImpacted": "30+", "achievements": 16
+  },
+  "heroStats": [
+    { "value": "16", "label": "achievements" },
+    { "value": "15", "label": "modules shipped" },
+    { "value": "30+", "label": "enterprise clients" },
+    { "value": "313", "label": "closed tickets" }
+  ],
+  "tiers": [
+    { "label": "Tier 01", "name": "system-wide impact" },
+    { "label": "Tier 02", "name": "major new capabilities" },
+    { "label": "Tier 03", "name": "quality & reliability" },
+    { "label": "Tier 04", "name": "specialized" }
+  ],
+  "achievements": [
+    { "index": "01", "tier": 1, "order": 1, "title": "Vehicle & Driver Master", "titleEm": "complete rework", "clientShort": "platform-wide", "coverLine": "complete rework · system-wide" },
+    { "index": "02", "tier": 1, "order": 2, "title": "Dedicated Vehicle Board", "titleEm": "made usable", "clientShort": "3 enterprise clients", "coverLine": "multi-client · 3 enterprises" },
+    { "index": "03", "tier": 1, "order": 3, "title": "Notification Infrastructure", "titleEm": "provider cutover", "clientShort": "platform-wide", "coverLine": "migration + internal dashboards" },
+    { "index": "05", "tier": 2, "order": 5, "title": "QR Code Decoder", "titleEm": "built from scratch", "clientShort": "Acme Steel · live", "coverLine": "v1.1 · live" },
+    { "index": "07", "tier": 2, "order": 7, "title": "Jest Unit Testing", "titleEm": "fully automated", "clientShort": "engineering", "coverLine": "complete · CI-integrated" },
+    { "index": "09", "tier": 3, "order": 9, "title": "Notification Unsubscribe", "titleEm": "deliverability win", "clientShort": "platform-wide", "coverLine": "anti-spam · domain protection" },
+    { "index": "11", "tier": 3, "order": 11, "title": "Performance & Stability", "titleEm": "observability fixes", "clientShort": "platform-wide", "coverLine": "15+ fixes · platform-wide" },
+    { "index": "14", "tier": 4, "order": 14, "title": "Container Master + Board", "titleEm": "specialized ops", "clientShort": "Acme Chemicals", "coverLine": "outbound container ops" }
+  ],
+  "future": [
+    { "index": "01", "title": "Folio", "titleEm": "internal RAG bot", "status": "Beta", "stack": "Bedrock · pgvector · BM25 · MCP", "shortDesc": "Ask in Slack · cite the source · drop the wiki tab." },
+    { "index": "02", "title": "AI Messages", "titleEm": "templates from plain English", "status": "In design", "stack": "LLM · Notifications", "shortDesc": "Draft new notification templates from a one-line requirement." },
+    { "index": "03", "title": "BYOP", "titleEm": "bring your own provider", "status": "In flight", "stack": "Notifications · multi-tenant", "shortDesc": "Enterprise clients wire their own SMS / WhatsApp route." }
+  ]
+}
