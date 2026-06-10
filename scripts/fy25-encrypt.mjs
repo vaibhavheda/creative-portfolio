@@ -20,6 +20,11 @@ function promptHidden(question) {
 }
 
 const content = JSON.parse(await readFile(SRC, 'utf8'));
+if (!process.env.FY25_PASSWORD && !process.stdin.isTTY) {
+  console.error('No interactive terminal for the password prompt.');
+  console.error('Run this in a real terminal (Terminal.app), or set FY25_PASSWORD.');
+  process.exit(1);
+}
 const password = process.env.FY25_PASSWORD || await promptHidden('FY25 password: ');
 if (!password || password.length < 8) {
   console.error('Refusing: password shorter than 8 chars. Use a 3+ word passphrase.');
