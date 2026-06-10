@@ -2,7 +2,9 @@
 import { pad, DAYS_S, MON_S } from '../shared/datetime.js';
 import { DESKTOP_Q, REDUCE } from '../shared/env.js';
 import { renderFinder, setFinderFilter } from './finder.js';
+import { PROJECTS } from '../data/projects.js';
 import { openVee } from '../shared/vee.js';
+import { initFy25Desktop } from './fy25.js';
 
 export function initDesktop() {
   if (initDesktop.done) return;
@@ -110,9 +112,11 @@ export function initDesktop() {
   var aboutResume = document.getElementById('aboutResume');
   if (aboutResume) aboutResume.addEventListener('click', function () { showWindow('resume'); });
 
-  // Dev aid: ?win=<id> opens a window on load (for screenshots).
+  // Dev aid: ?win=<id> opens a window on load (for screenshots). fy25 is
+  // excluded — it opens through the unlock flow (?fy25=1) instead.
   var winParam = new URLSearchParams(window.location.search).get('win');
-  if (winParam) setTimeout(function () { showWindow(winParam); }, 60);
+  var winLocked = PROJECTS.some(function (p) { return p.locked && p.key === winParam; });
+  if (winParam && !winLocked) setTimeout(function () { showWindow(winParam); }, 60);
 
   // ---- Control Center: open/close + live Appearance (theme) toggle ----
   var cc = document.getElementById('control-center');
@@ -167,4 +171,6 @@ export function initDesktop() {
     });
     dock.addEventListener('mouseleave', resetDock);
   }
+
+  initFy25Desktop(showWindow);
 }
