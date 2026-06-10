@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "node --test 'scripts/*.test.mjs'",
+    "fy25:encrypt": "node scripts/fy25-encrypt.mjs"
   },
   "devDependencies": {
     "vite": "^5.4.0"
