@@ -1,6 +1,7 @@
 // iOS HOME face — clock, app launchers, slide-up detail sheet.
 import { pad, DAYS_L, MON_L } from '../shared/datetime.js';
 import { SVG, APPS, ICOCLASS, PROJECTS } from '../data/projects.js';
+import { initFy25Phone, openFy25Phone, closeFy25Phone } from './fy25-phone.js';
 
 export function initPhone() {
   if (initPhone.done) return;
@@ -35,6 +36,7 @@ export function initPhone() {
   }
 
   function openSheet(key) {
+    if (key === 'fy25') { closeSheet(); openFy25Phone(); return; }
     var a = APPS[key];
     if (!a) return;
     var html =
@@ -80,7 +82,7 @@ export function initPhone() {
     });
   }
   scrim.addEventListener('click', closeSheet);
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { closeSheet(); psClose(); } });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { closeSheet(); psClose(); closeFy25Phone(); } });
 
   // ---- iOS-native Spotlight search (scoped to the phone .screen) ----
   var SCREEN = document.querySelector('#phone-stage .screen');
@@ -138,6 +140,8 @@ export function initPhone() {
 
   // The guide is V (the full-screen overlay) — auto-shown on first visit and
   // re-openable from search. Dev aid: ?vee=1 force-opens it (handled in vee.js).
+
+  initFy25Phone();
 
   var lock = document.getElementById('lock');
   if (lock) setTimeout(function () { if (lock && lock.parentNode) lock.parentNode.removeChild(lock); }, 1600);
